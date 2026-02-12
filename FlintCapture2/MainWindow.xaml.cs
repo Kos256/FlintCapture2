@@ -42,6 +42,11 @@ namespace FlintCapture2
         - when notif pressed, custom editor window is opened to edit screenshot
 
         It should have a control panel window too :) (Toggle between wait for 3m of inactivity and background process)
+
+        another idea: it should have a thing in settings where it glows if you have less than 1GB of disk space. 
+        - "Running out of storage? You can move the Temp folder to another drive on the system"
+        - "Make sure this drive isn't removable! Otherwise FlintCapture could break."
+        - "If it is a removable drive, make sure not to plug or unplug that drive after opening or before closing FlintCapture"
         */
 
         public MainWindow()
