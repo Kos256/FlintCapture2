@@ -8,4 +8,53 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="assets\fonts\Exo\Exo Black.otf" />
+    <None Remove="assets\fonts\Exo\Exo BlackItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Bold.otf" />
+    <None Remove="assets\fonts\Exo\Exo BoldItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo ExtraBold.otf" />
+    <None Remove="assets\fonts\Exo\Exo ExtraBoldItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo ExtraLight.otf" />
+    <None Remove="assets\fonts\Exo\Exo ExtraLightItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Italic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Light.otf" />
+    <None Remove="assets\fonts\Exo\Exo LightItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Medium.otf" />
+    <None Remove="assets\fonts\Exo\Exo MediumItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Regular.otf" />
+    <None Remove="assets\fonts\Exo\Exo SemiBold.otf" />
+    <None Remove="assets\fonts\Exo\Exo SemiBoldItalic.otf" />
+    <None Remove="assets\fonts\Exo\Exo Thin.otf" />
+    <None Remove="assets\fonts\Exo\Exo ThinItalic.otf" />
+    <None Remove="assets\sounds\hover.wav" />
+    <None Remove="assets\sounds\screenshot.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="assets\sounds\hover.wav" />
+    <EmbeddedResource Include="assets\sounds\screenshot.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\fonts\Exo\Exo Black.otf" />
+    <Resource Include="assets\fonts\Exo\Exo BlackItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Bold.otf" />
+    <Resource Include="assets\fonts\Exo\Exo BoldItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo ExtraBold.otf" />
+    <Resource Include="assets\fonts\Exo\Exo ExtraBoldItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo ExtraLight.otf" />
+    <Resource Include="assets\fonts\Exo\Exo ExtraLightItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Italic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Light.otf" />
+    <Resource Include="assets\fonts\Exo\Exo LightItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Medium.otf" />
+    <Resource Include="assets\fonts\Exo\Exo MediumItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Regular.otf" />
+    <Resource Include="assets\fonts\Exo\Exo SemiBold.otf" />
+    <Resource Include="assets\fonts\Exo\Exo SemiBoldItalic.otf" />
+    <Resource Include="assets\fonts\Exo\Exo Thin.otf" />
+    <Resource Include="assets\fonts\Exo\Exo ThinItalic.otf" />
+  </ItemGroup>
+
 </Project>
