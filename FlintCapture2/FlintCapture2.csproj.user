@@ -8,5 +8,8 @@
     <Compile Update="NotificationWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="SystemTrayContextMenuWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

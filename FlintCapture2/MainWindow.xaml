@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlintCapture2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="FlintCapture Root Background Process" Height="200" Width="300">
     <Grid>
-
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Root Background Process" VerticalAlignment="Center" FontSize="24"/>
+        <!-- Make an xml variable to make it easy to reference assets through pack:// instead of having to type all of that over and over again -->
     </Grid>
 </Window>
