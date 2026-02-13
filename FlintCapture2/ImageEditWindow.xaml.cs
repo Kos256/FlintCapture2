@@ -337,8 +337,6 @@ namespace FlintCapture2
                 _intentionallyClosed = true;
                 App.Current.Shutdown();
             }
-
-            // commit farming
         }
         #endregion
     }
