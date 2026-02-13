@@ -175,7 +175,7 @@ namespace FlintCapture2
             _dismissed = true;
             PlayNotifyAnim(false);
             //Process.Start("explorer.exe", ScreenshotFilePath);
-            ImageEditWindow window = new(ScreenshotFilePath);
+            ImageEditWindow window = new(ScreenshotFilePath, mainWin);
             window.Show();
         }
 

@@ -26,7 +26,8 @@ namespace FlintCapture2
         public string ScreenshotFilePath = "";
         public BitmapImage _ssImage;
         public BitmapImage _ssEditedImage;
-        public ImageEditWindow(string ssfpInput)
+        private MainWindow mainWin;
+        public ImageEditWindow(string ssfpInput, MainWindow mainWin)
         {
             InitializeComponent();
             Closing += ImageEditWindow_Closing;
@@ -37,6 +38,8 @@ namespace FlintCapture2
 
             Activated += (s, e) => windowFocusBorder.Opacity = 1;
             Deactivated += (s, e) => windowFocusBorder.Opacity = 0;
+
+            this.mainWin = mainWin;
 
             _ssImage = new BitmapImage(new Uri(ScreenshotFilePath));
             _ssEditedImage = _ssImage.Clone();
@@ -167,6 +170,8 @@ namespace FlintCapture2
             this.Close();
         }
 
+
+        SolidColorBrush borderBrushFlashing = Brushes.Yellow.Clone();
         private async void menuBtnClicked(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
@@ -179,7 +184,19 @@ namespace FlintCapture2
                 {
                     annotationCanvas.Visibility = Visibility.Hidden;
                     cropCanvas.Visibility = Visibility.Visible;
+
                     cropBtn.Content = "Done";
+                    cropBtn.BorderBrush = borderBrushFlashing;
+                    borderBrushFlashing.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation
+                    {
+                        From = Colors.Yellow,
+                        To = Colors.DarkGoldenrod,
+                        Duration = TimeSpan.FromSeconds(0.25),
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever,
+                    });
+
                     copyBtn.Content = "Copy Region";
                     UpdateCropOverlay();
                     return;
@@ -187,9 +204,13 @@ namespace FlintCapture2
                 if (((string)btn.Content).ToLower().Contains("done"))
                 {
                     CropImageToSelection();
+
                     annotationCanvas.Visibility = Visibility.Visible;
                     cropCanvas.Visibility = Visibility.Hidden;
+
                     cropBtn.Content = "Crop";
+                    cropBtn.ClearValue(Button.BorderBrushProperty);
+
                     copyBtn.Content = "Copy Image";
                     return;
                 }
@@ -261,6 +282,7 @@ namespace FlintCapture2
                     encoder.Save(stream);
                 }
 
+                mainWin.ShowSavedScreenshotsDirectoryFileExplorer(filePath);
                 _savedWork = true;
                 Close();
             }
@@ -297,14 +319,32 @@ namespace FlintCapture2
             double width = selectionRect.Width;
             double height = selectionRect.Height;
 
+            // Prevent divide-by-zero drama
+            if (imgPreview.ActualWidth <= 0 || imgPreview.ActualHeight <= 0 || _ssImage == null)
+                return;
+
+            // Scale factors from UI space to image space
+            double scaleX = _ssImage.PixelWidth / imgPreview.ActualWidth;
+            double scaleY = _ssImage.PixelHeight / imgPreview.ActualHeight;
+
+            int imageX = (int)Math.Round(left * scaleX);
+            int imageY = (int)Math.Round(top * scaleY);
+            int imageW = (int)Math.Round(width * scaleX);
+            int imageH = (int)Math.Round(height * scaleY);
+
+            statusTextRun.Text =
+                $"Selected {imageW} x {imageH} at ({imageX}, {imageY}).";
+
             // Full canvas rectangle
-            var fullRect = new RectangleGeometry(new Rect(0, 0, cropCanvas.ActualWidth, cropCanvas.ActualHeight));
+            var fullRect = new RectangleGeometry(
+                new Rect(0, 0, cropCanvas.ActualWidth, cropCanvas.ActualHeight));
 
-            // Selection rectangle
-            var selection = new RectangleGeometry(new Rect(left, top, width, height));
+            // Selection rectangle (still UI space for the overlay)
+            var selection = new RectangleGeometry(
+                new Rect(left, top, width, height));
 
-            // Exclude the selection from the full overlay
-            var mask = new CombinedGeometry(GeometryCombineMode.Exclude, fullRect, selection);
+            var mask = new CombinedGeometry(
+                GeometryCombineMode.Exclude, fullRect, selection);
 
             cropOverlayPath.Data = mask;
         }
@@ -379,9 +419,9 @@ namespace FlintCapture2
                     imgPreview.Source = bitmap;
 
                     if (cropSizeLimitClamped)
-                        statusTextRun.Text = "Crop was clamped to minimum limit (1x1).";
+                        statusTextRun.Text = $"Crop was clamped to minimum limit. ({w} x {h})";
                     else
-                        statusTextRun.Text = $"Image cropped to {w}x{h}.";
+                        statusTextRun.Text = $"Image cropped to {w} x {h}.";
                 }
 
                 return bitmap;

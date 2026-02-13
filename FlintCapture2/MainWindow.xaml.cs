@@ -84,6 +84,19 @@ namespace FlintCapture2
             CompositionTarget.Rendering += OnFrame;
         }
 
+        public void ShowSavedScreenshotsDirectoryFileExplorer(string? path)
+        {
+            string filePath = path ?? SSHandler.ScreenshotDirectory;
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"/select,\"{filePath}\"",
+                UseShellExecute = true
+            });
+        }
+
+
         public bool isHandlingPrintScreen = false;
         private async void OnFrame(object? sender, EventArgs e)
         {
