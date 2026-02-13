@@ -32,11 +32,19 @@
     <None Remove="assets\icons\app.ico" />
     <None Remove="assets\icons\app.png" />
     <None Remove="assets\icons\appNew.ico" />
+    <None Remove="assets\icons\window controls\close.png" />
+    <None Remove="assets\icons\window controls\minimize.png" />
+    <None Remove="assets\icons\window controls\red close.png" />
+    <None Remove="assets\icons\window controls\white close.png" />
+    <None Remove="assets\sounds\dismiss all.wav" />
+    <None Remove="assets\sounds\dismiss.wav" />
     <None Remove="assets\sounds\hover.wav" />
     <None Remove="assets\sounds\screenshot.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="assets\sounds\dismiss all.wav" />
+    <EmbeddedResource Include="assets\sounds\dismiss.wav" />
     <EmbeddedResource Include="assets\sounds\hover.wav" />
     <EmbeddedResource Include="assets\sounds\screenshot.wav" />
   </ItemGroup>
@@ -69,6 +77,10 @@
     <Resource Include="assets\icons\app.ico" />
     <Resource Include="assets\icons\app.png" />
     <Resource Include="assets\icons\appNew.ico" />
+    <Resource Include="assets\icons\window controls\close.png" />
+    <Resource Include="assets\icons\window controls\minimize.png" />
+    <Resource Include="assets\icons\window controls\red close.png" />
+    <Resource Include="assets\icons\window controls\white close.png" />
   </ItemGroup>
 
 </Project>

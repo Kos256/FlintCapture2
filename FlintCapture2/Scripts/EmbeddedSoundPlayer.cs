@@ -1,7 +1,6 @@
 ﻿using FlintCapture2;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using NextbotsWPF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +10,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace NextbotsWPF.Scripts
+namespace FlintCapture2.Scripts
 {
     /// <summary>
     /// Embedded Sound Player provides tools to play audio from resources that are embedded inside the application.

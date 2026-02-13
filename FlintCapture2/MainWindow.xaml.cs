@@ -29,7 +29,6 @@ namespace FlintCapture2
         // windows:
         public MainAppWindow _appGuiWindow;
         public SystemTrayContextMenuWindow ctxMenuWindow;
-        public List<NotificationWindow> notificationWindowQueue;
 
         // scripts:
         public SystemTrayHandler SystemTray;
@@ -80,7 +79,6 @@ namespace FlintCapture2
             globalStopwatch = new();
             globalStopwatch.Start();
 
-            notificationWindowQueue = new List<NotificationWindow>();
             _appGuiWindow = new MainAppWindow();
 
             ctxMenuWindow = new(this);

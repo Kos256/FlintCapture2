@@ -1,0 +1,90 @@
+﻿<Window x:Class="FlintCapture2.NotificationWindowImagePreview"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlintCapture2"
+        mc:Ignorable="d"
+            Title="NotificationWindowImagePreview" Height="500" Width="500" Foreground="White" Background="#19000000" WindowStyle="None" AllowsTransparency="True">
+    <Window.Resources>
+        <!-- Single ImageBrush for both front and back -->
+        <ImageBrush x:Key="ssImgBrush"/>
+    </Window.Resources>
+
+    <Grid>
+        <Viewport3D x:Name="viewport3D">
+            <!-- Camera -->
+            <Viewport3D.Camera>
+                <PerspectiveCamera x:Name="mainCamera" Position="0, 0, 1.6" LookDirection="0, 0, -1" FieldOfView="90">
+                    <PerspectiveCamera.Transform>
+                        <RotateTransform3D x:Name="cameraRotation">
+                            <RotateTransform3D.Rotation>
+                                <AxisAngleRotation3D x:Name="cameraRotationAngle" Axis="0, 1, 0" Angle="0"/>
+                            </RotateTransform3D.Rotation>
+                        </RotateTransform3D>
+                    </PerspectiveCamera.Transform>
+                </PerspectiveCamera>
+            </Viewport3D.Camera>
+
+
+            <!-- 3D Image -->
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <GeometryModel3D>
+                        <GeometryModel3D.Geometry>
+                            <!-- Plane scaled for pixel-perfect sizing -->
+                            <MeshGeometry3D 
+                    Positions="-1,1,0 1,1,0 1,-1,0 -1,-1,0"
+                    TextureCoordinates="0,0 1,0 1,1 0,1"
+                    TriangleIndices="0 1 2 0 2 3"
+                />
+                        </GeometryModel3D.Geometry>
+
+                        <!-- Front Material -->
+                        <GeometryModel3D.Material>
+                            <MaterialGroup>
+                                <EmissiveMaterial>
+                                    <EmissiveMaterial.Brush>
+                                        <VisualBrush Visual="{Binding ElementName=ssImgElem}"/>
+                                    </EmissiveMaterial.Brush>
+                                </EmissiveMaterial>
+                            </MaterialGroup>
+                        </GeometryModel3D.Material>
+
+                        <!-- Back Material (ensures visibility when rotated) -->
+                        <GeometryModel3D.BackMaterial>
+                            <MaterialGroup>
+                                <EmissiveMaterial>
+                                    <EmissiveMaterial.Brush>
+                                        <VisualBrush Visual="{Binding ElementName=ssImgElem}"/>
+                                    </EmissiveMaterial.Brush>
+                                </EmissiveMaterial>
+                            </MaterialGroup>
+                        </GeometryModel3D.BackMaterial>
+
+                        <!-- Rotation -->
+                        <GeometryModel3D.Transform>
+                            <Transform3DGroup>
+                                <ScaleTransform3D x:Name="imgScaleTransform" ScaleX="1" ScaleY="1" ScaleZ="1"/>
+                                <RotateTransform3D x:Name="imgRotationTransform">
+                                    <RotateTransform3D.Rotation>
+                                        <AxisAngleRotation3D x:Name="imageRotationTransformAxisY" Axis="0, 1, 0" Angle="0"/>
+                                    </RotateTransform3D.Rotation>
+                                </RotateTransform3D>
+                            </Transform3DGroup>
+                        </GeometryModel3D.Transform>
+
+                    </GeometryModel3D>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+
+
+            <!-- Light Source -->
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <DirectionalLight Color="White" Direction="-1,-1,-1"/>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
+    </Grid>
+</Window>

@@ -73,7 +73,9 @@ namespace FlintCapture2.Scripts
                 }
 
                 Debug.WriteLine($"Saved to {ssImagePath}");
-                notificationWindowQueue.Add(new NotificationWindow(mainWin, timestamp, ssImagePath));
+                NotificationWindow notifWnd = new(mainWin, this, timestamp, ssImagePath);
+                notificationWindowQueue.Add(notifWnd);
+                notifWnd.StartSequences();
             }
             catch (Exception ex)
             {
@@ -87,7 +89,7 @@ namespace FlintCapture2.Scripts
             // wait for key release
             while (GetKeyStateAsBool(KeyStateHelper.VK_SNAPSHOT))
             {
-                await Task.Delay(100);
+                await Task.Delay(300);
             }
         }
 
