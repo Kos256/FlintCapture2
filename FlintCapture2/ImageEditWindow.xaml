@@ -77,7 +77,11 @@
         </Grid>
         <Button x:Name="copyBtn" Content="Copy image" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,80,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
         <Button x:Name="saveBtn" Content="Save" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,10,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
-        <Button x:Name="cropBtn" Content="Quick Crop" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Left" Margin="10,0,0,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
+        <Button x:Name="cropBtn" Content="Crop" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Left" Margin="10,0,0,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="10,0,0,60">
+            <Run Text="Status:" Foreground="#FF00B8FD" FontFamily="{DynamicResource ExoBold}"/>
+            <Run x:Name="statusTextRun" Text="Unknown?" Foreground="#FF99E3FF"/>
+        </TextBlock>
 
     </Grid>
 </Window>

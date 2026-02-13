@@ -98,8 +98,9 @@ namespace FlintCapture2
             Loaded += ImageEditWindow_Loaded;
         }
 
-        private void ImageEditWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void ImageEditWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            statusTextRun.Text = "Window loaded. Waiting for image...";
             //annotationCanvas.Width = imgPreview.Width;
             annotationCanvas.Visibility = Visibility.Visible;
             cropCanvas.Visibility = Visibility.Hidden;
@@ -124,6 +125,9 @@ namespace FlintCapture2
                 Duration = TimeSpan.FromSeconds(0.7),
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
             });
+
+            await Task.Delay(500);
+            statusTextRun.Text = "Ready!";
         }
 
         bool _savedWork = false;
@@ -176,6 +180,7 @@ namespace FlintCapture2
                     annotationCanvas.Visibility = Visibility.Hidden;
                     cropCanvas.Visibility = Visibility.Visible;
                     cropBtn.Content = "Done";
+                    copyBtn.Content = "Copy Region";
                     UpdateCropOverlay();
                     return;
                 }
@@ -184,20 +189,45 @@ namespace FlintCapture2
                     CropImageToSelection();
                     annotationCanvas.Visibility = Visibility.Visible;
                     cropCanvas.Visibility = Visibility.Hidden;
-                    cropBtn.Content = "Quick Crop";
+                    cropBtn.Content = "Crop";
+                    copyBtn.Content = "Copy Image";
                     return;
                 }
             }
             if (btn.Name.Contains("copy"))
             {
-                if (((string)btn.Content).ToLower() != "copy image") return;
+                bool regionMode = false;
+                //if (
+                //    (((string)btn.Content).ToLower() != "copy image")
+                //    ||
+                //    (((string)btn.Content).ToLower() != "copy region")) return;
+
+                if (((string)btn.Content) != "Copy Image")
+                {
+                    regionMode = true;
+                    if (((string)btn.Content) != "Copy Region")
+                    {
+                        return;
+                    }
+                }
+
+                string originalBtnContent = (string)copyBtn.Content;
 
                 copyBtn.Content = "Copying...";
                 await Task.Delay(100);
+                
                 try
                 {
-                    Clipboard.SetImage(_ssEditedImage);
-                    //throw new Exception(); // test exception
+                    if (!regionMode) // normal crop
+                    {
+                        Clipboard.SetImage(_ssEditedImage);
+                        //throw new Exception(); // test exception
+                    }
+                    else // regional crop
+                    {
+                        Clipboard.SetImage(CropImageToSelection(false) ?? _ssEditedImage);
+                        //throw new Exception(); // test exception
+                    }
                     copyBtn.Content = "Copied!";
                     copyBtn.Background = new SolidColorBrush(Color.FromRgb(0, 50, 0));
                     copyBtn.BorderBrush = Brushes.Lime;
@@ -213,7 +243,7 @@ namespace FlintCapture2
                 await Task.Delay(1000);
                 copyBtn.ClearValue(Border.BackgroundProperty);
                 copyBtn.ClearValue(Border.BorderBrushProperty);
-                copyBtn.Content = "Copy image";
+                copyBtn.Content = "Copy Image";
             }
             if (btn.Name.Contains("save"))
             {
@@ -278,17 +308,15 @@ namespace FlintCapture2
 
             cropOverlayPath.Data = mask;
         }
-        private void CropImageToSelection()
+        private BitmapImage? CropImageToSelection(bool applyCrop = true)
         {
-            if (_ssImage == null) return;
+            if (_ssImage == null) return null;
 
-            // Get selection rectangle on the Canvas
             double left = Canvas.GetLeft(selectionRect);
             double top = Canvas.GetTop(selectionRect);
             double width = selectionRect.Width;
             double height = selectionRect.Height;
 
-            // Scale from canvas coordinates to image pixel coordinates
             double scaleX = _ssImage.PixelWidth / imgPreview.ActualWidth;
             double scaleY = _ssImage.PixelHeight / imgPreview.ActualHeight;
 
@@ -297,27 +325,46 @@ namespace FlintCapture2
             int w = (int)(width * scaleX);
             int h = (int)(height * scaleY);
 
-            // Clamp to image bounds
+            // Initial bounds clamp
             x = Math.Max(0, Math.Min(x, _ssImage.PixelWidth - 1));
             y = Math.Max(0, Math.Min(y, _ssImage.PixelHeight - 1));
             if (x + w > _ssImage.PixelWidth) w = _ssImage.PixelWidth - x;
             if (y + h > _ssImage.PixelHeight) h = _ssImage.PixelHeight - y;
 
+            const int ABSOLUTE_MIN_LIMIT = 1;
+            bool cropSizeLimitClamped = false;
+
+            if (w < ABSOLUTE_MIN_LIMIT || h < ABSOLUTE_MIN_LIMIT)
+                cropSizeLimitClamped = true;
+
+            w = Math.Max(w, ABSOLUTE_MIN_LIMIT);
+            h = Math.Max(h, ABSOLUTE_MIN_LIMIT);
+
+            if (x + w > _ssImage.PixelWidth)
+                w = _ssImage.PixelWidth - x;
+
+            if (y + h > _ssImage.PixelHeight)
+                h = _ssImage.PixelHeight - y;
+
+            if (w <= 0 || h <= 0)
+            {
+                if (applyCrop)
+                    statusTextRun.Text = "Crop safety check shows bounding is too small?";
+                return null;
+            }
+
             try
             {
-                // Create CroppedBitmap
                 var cb = new CroppedBitmap(_ssImage, new Int32Rect(x, y, w, h));
 
-                // Store in your edited image
-                var bitmap = new BitmapImage();
+                BitmapImage bitmap;
                 using (var stream = new MemoryStream())
                 {
-                    // Encode to PNG
                     var encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(cb));
                     encoder.Save(stream);
 
-                    // Load back into BitmapImage
+                    bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.StreamSource = new MemoryStream(stream.ToArray());
@@ -325,17 +372,31 @@ namespace FlintCapture2
                     bitmap.Freeze();
                 }
 
-                _ssEditedImage = bitmap;
-                _ssImage = _ssEditedImage;
+                if (applyCrop)
+                {
+                    _ssEditedImage = bitmap;
+                    _ssImage = bitmap;
+                    imgPreview.Source = bitmap;
 
-                // Display it
-                imgPreview.Source = _ssEditedImage;
+                    if (cropSizeLimitClamped)
+                        statusTextRun.Text = "Crop was clamped to minimum limit (1x1).";
+                    else
+                        statusTextRun.Text = $"Image cropped to {w}x{h}.";
+                }
+
+                return bitmap;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}", "Exception while cropping :(", MessageBoxButton.OK, MessageBoxImage.Error);
-                _intentionallyClosed = true;
-                App.Current.Shutdown();
+                if (applyCrop)
+                {
+                    MessageBox.Show($"{ex.Message}", "Exception while cropping :(",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    _intentionallyClosed = true;
+                    App.Current.Shutdown();
+                }
+
+                return null;
             }
         }
         #endregion

@@ -41,15 +41,6 @@ namespace FlintCapture2
         private Stopwatch globalStopwatch;
 
         /*
-        App idea:
-        - Runs as a background process
-        - Uses copied image from clipboard
-        - Relies on AHK to launch this program
-        - Sends a notification, waits for press within 3m
-        - If no press within 3m it quits auto
-        - or maybe i should run it as a background process if it doesn't take up too much CPU?
-        - when notif pressed, custom editor window is opened to edit screenshot
-
         It should have a control panel window too :) (Toggle between wait for 3m of inactivity and background process)
 
         another idea: it should have a thing in settings where it glows if you have less than 1GB of disk space. 
