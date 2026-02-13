@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using FlintCapture2;
+using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NextbotsWPF;
 using System;

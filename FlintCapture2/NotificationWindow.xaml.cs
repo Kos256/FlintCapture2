@@ -17,9 +17,17 @@ namespace FlintCapture2
     /// </summary>
     public partial class NotificationWindow : Window
     {
-        public NotificationWindow()
+        private MainWindow mainWin;
+        public string Timestamp;
+        public string ScreenshotFilePath;
+        public NotificationWindow(MainWindow mainWin, string timestamp, string ssfp)
         {
             InitializeComponent();
+            this.mainWin = mainWin;
+            Timestamp = timestamp;
+            ScreenshotFilePath = ssfp;
+
+            Show();
         }
     }
 }
