@@ -76,5 +76,139 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Styling for notificaton buttons -->
+        <Color x:Key="BtnNotifPrimary.PalettePrimary">#FF00B0FF</Color>
+        <Color x:Key="BtnNotifPrimary.PaletteSecondary">Transparent</Color>
+        <Color x:Key="BtnNotifPrimary.PaletteTertiary">Black</Color>
+        <Color x:Key="BtnNotifSecondary.PalettePrimary">#FFFFE500</Color>
+        <Color x:Key="BtnNotifSecondary.PaletteSecondary">Transparent</Color>
+        <Color x:Key="BtnNotifSecondary.PaletteTertiary">Black</Color>
+        
+        <SolidColorBrush x:Key="BtnNotifPrimary.Static.Background" Color="{StaticResource BtnNotifPrimary.PaletteSecondary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Static.Foreground" Color="{StaticResource BtnNotifPrimary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Static.Border" Color="{StaticResource BtnNotifPrimary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.MouseOver.Background" Color="{StaticResource BtnNotifPrimary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.MouseOver.Foreground" Color="{StaticResource BtnNotifPrimary.PaletteTertiary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.MouseOver.Border" Color="{StaticResource BtnNotifPrimary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Pressed.Background" Color="#FF0070A3"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Pressed.Foreground" Color="{StaticResource BtnNotifPrimary.PaletteTertiary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Pressed.Border" Color="{StaticResource BtnNotifPrimary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Disabled.Background" Color="#7F4F4F4F"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Disabled.Border" Color="#7FFFFFFF"/>
+        <SolidColorBrush x:Key="BtnNotifPrimary.Disabled.Foreground" Color="#B2000000"/>
+        <Style x:Key="NotifButtonPrimaryStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource BtnNotifPrimary.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BtnNotifPrimary.Static.Border}"/>
+            <Setter Property="Foreground" Value="{StaticResource BtnNotifPrimary.Static.Foreground}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="0,0,0,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="8,2,8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter"
+                                Focusable="False"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                Margin="{TemplateBinding Padding}"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                            />      
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifPrimary.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifPrimary.MouseOver.Border}"/>
+                                <Setter Property="Foreground" Value="{StaticResource BtnNotifPrimary.MouseOver.Foreground}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifPrimary.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifPrimary.Pressed.Border}"/>
+                                <Setter Property="Foreground" Value="{StaticResource BtnNotifPrimary.Pressed.Foreground}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifPrimary.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifPrimary.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource BtnNotifPrimary.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <SolidColorBrush x:Key="BtnNotifSecondary.Static.Background" Color="{StaticResource BtnNotifSecondary.PaletteSecondary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Static.Foreground" Color="{StaticResource BtnNotifSecondary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Static.Border" Color="{StaticResource BtnNotifSecondary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.MouseOver.Background" Color="{StaticResource BtnNotifSecondary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.MouseOver.Foreground" Color="{StaticResource BtnNotifSecondary.PaletteTertiary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.MouseOver.Border" Color="{StaticResource BtnNotifSecondary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Pressed.Background" Color="#FF9E8E00"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Pressed.Foreground" Color="{StaticResource BtnNotifSecondary.PaletteTertiary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Pressed.Border" Color="{StaticResource BtnNotifSecondary.PalettePrimary}"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Disabled.Background" Color="#7F4F4F4F"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Disabled.Border" Color="#7FFFFFFF"/>
+        <SolidColorBrush x:Key="BtnNotifSecondary.Disabled.Foreground" Color="#B2000000"/>
+        <Style x:Key="NotifButtonSecondaryStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource BtnNotifSecondary.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BtnNotifSecondary.Static.Border}"/>
+            <Setter Property="Foreground" Value="{StaticResource BtnNotifSecondary.Static.Foreground}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="0,0,0,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="8,2,8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter"
+                                Focusable="False"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                Margin="{TemplateBinding Padding}"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                            />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifSecondary.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifSecondary.MouseOver.Border}"/>
+                                <Setter Property="Foreground" Value="{StaticResource BtnNotifSecondary.MouseOver.Foreground}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifSecondary.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifSecondary.Pressed.Border}"/>
+                                <Setter Property="Foreground" Value="{StaticResource BtnNotifSecondary.Pressed.Foreground}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource BtnNotifSecondary.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource BtnNotifSecondary.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource BtnNotifSecondary.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

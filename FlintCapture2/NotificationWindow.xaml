@@ -10,18 +10,18 @@
 
         <Grid x:Name="MainGrid" Background="#7F000000" Margin="0,100,0,0">
             <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" Text="Screenshot captured!" VerticalAlignment="Top" FontSize="34" FontFamily="{DynamicResource ExoItalic}"/>
-            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Bottom" FontSize="16" Width="324" TextAlignment="Center" Foreground="White" Text="Click here to view and edit the screenshot. You can access a history of your screenshots by tapping the system tray icon." Margin="0,0,0,60"/>
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Bottom" FontSize="16" Width="324" TextAlignment="Center" Foreground="White" Text="Click here to view and edit the screenshot. You can access a history of your screenshots by tapping the system tray icon." Margin="0,0,0,70"/>
             <Border x:Name="imagePreview" BorderThickness="1" Margin="10,70,10,140"/>
             <Grid x:Name="timerGrid" VerticalAlignment="Bottom" Height="10">
                 <Rectangle x:Name="timerRect" Fill="White" Width="350" HorizontalAlignment="Left"/>
             </Grid>
             <Rectangle x:Name="windowClickColliderRect" Fill="Transparent" d:IsHidden="True" Cursor="UpArrow"/>
-            <Border x:Name="dismissAllBtn" BorderBrush="#FFFFE500" BorderThickness="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,86,20" Padding="5,2,5,2" Background="#7F000000" Cursor="Hand">
-                <TextBlock TextWrapping="Wrap" Text="Dismiss All [n]" Margin="0,-2,0,0" FontSize="16" Foreground="#FFFFE500"/>
-            </Border>
-            <Border x:Name="dismissBtn" BorderBrush="#FF00B0FF" BorderThickness="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,20" Padding="5,2,5,2" Background="#7F000000" Cursor="Hand">
-                <TextBlock TextWrapping="Wrap" Text="Dismiss" Margin="0,-2,0,0" FontSize="16" Foreground="#FF00B0FF"/>
-            </Border>
+            <Button x:Name="dismissBtn" Style="{StaticResource NotifButtonPrimaryStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,20">
+                <TextBlock TextWrapping="Wrap" Text="Dismiss" FontSize="16" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"/>
+            </Button>
+            <Button x:Name="dismissAllBtn" Style="{StaticResource NotifButtonSecondaryStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,95,20">
+                <TextBlock TextWrapping="Wrap" Text="Dismiss All [n]" FontSize="16" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+            </Button>
 
         </Grid>
 
