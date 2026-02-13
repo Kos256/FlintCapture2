@@ -339,7 +339,6 @@ namespace FlintCapture2
             }
 
             // commit farming
-            // commit farming
         }
         #endregion
     }
