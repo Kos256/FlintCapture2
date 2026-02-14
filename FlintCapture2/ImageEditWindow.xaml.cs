@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using PathIO = System.IO.Path;
 using System.Text;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ESP = FlintCapture2.Scripts.EmbeddedSoundPlayer;
+using PathIO = System.IO.Path;
 
 namespace FlintCapture2
 {
@@ -27,6 +29,9 @@ namespace FlintCapture2
         public BitmapImage _ssImage;
         public BitmapImage _ssEditedImage;
         private MainWindow mainWin;
+
+        private SolidColorBrush cropBoundsFillBrush;
+
         public ImageEditWindow(string ssfpInput, MainWindow mainWin)
         {
             InitializeComponent();
@@ -44,6 +49,9 @@ namespace FlintCapture2
             _ssImage = new BitmapImage(new Uri(ScreenshotFilePath));
             _ssEditedImage = _ssImage.Clone();
             imgPreview.Source = _ssImage;
+
+            cropBoundsFillBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7F000000"));
+            cropOverlayPath.Fill = cropBoundsFillBrush;
 
             const double MIN_CROPSIZE = 10;
 
@@ -104,6 +112,7 @@ namespace FlintCapture2
         private async void ImageEditWindow_Loaded(object sender, RoutedEventArgs e)
         {
             statusTextRun.Text = "Window loaded. Waiting for image...";
+            ESP.PlaySound("editor open");
             //annotationCanvas.Width = imgPreview.Width;
             annotationCanvas.Visibility = Visibility.Visible;
             cropCanvas.Visibility = Visibility.Hidden;
@@ -135,21 +144,74 @@ namespace FlintCapture2
 
         bool _savedWork = false;
         bool _intentionallyClosed = false;
+        bool _isAnimatingClose = false;
         private void ImageEditWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_savedWork) _intentionallyClosed = true;
-            if (_intentionallyClosed) return;
+            if (_isAnimatingClose)
+                return;
+
+            if (!_savedWork)
+            {
+                e.Cancel = true;
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to exit? You have unsaved edits to this image.",
+                    "Unsaved edits",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+            }
 
             e.Cancel = true;
-            var result = MessageBox.Show("Are you sure you want to exit? You have unsaved edits to this image.", "Unsaved edits", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            _isAnimatingClose = true;
+
+            ESP.PlaySound("editor close");
+
+            var fadeAnim = new DoubleAnimation
             {
-                _intentionallyClosed = true;
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    Close();
-                }));
-            }
+                To = 0,
+                Duration = TimeSpan.FromSeconds(0.5),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            fadeAnim.Completed += (s, _) =>
+            {
+                Close(); // SAFE now
+            };
+
+            RootGrid.BeginAnimation(OpacityProperty, fadeAnim);
+
+            var rootGridScale = new ScaleTransform(1, 1);
+            rootGridScale.CenterX = Width / 2;
+            rootGridScale.CenterY = Height / 2;
+            var rootGridRotation = new RotateTransform(0);
+            rootGridRotation.CenterX = Width / 2;
+            rootGridRotation.CenterY = Height / 2;
+            var rootGridTransform = new TransformGroup();
+            rootGridTransform.Children.Add(rootGridScale);
+            rootGridTransform.Children.Add(rootGridRotation);
+            RootGrid.RenderTransform = rootGridTransform;
+
+            var scaleAnim = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = TimeSpan.FromSeconds(0.5),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            var rotAnim = new DoubleAnimation
+            {
+                From = 0,
+                To = 90,
+                Duration = TimeSpan.FromSeconds(0.5),
+                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            rootGridScale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnim);
+            rootGridScale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnim);
+            rootGridRotation.BeginAnimation(RotateTransform.AngleProperty, rotAnim);
         }
 
         private bool windowExists = false;
@@ -180,6 +242,7 @@ namespace FlintCapture2
 
             if (btn.Name.Contains("crop"))
             {
+                // leftoff: make a dedicated "cancel crop" button
                 if (((string)btn.Content).ToLower().Contains("crop"))
                 {
                     annotationCanvas.Visibility = Visibility.Hidden;
@@ -197,8 +260,18 @@ namespace FlintCapture2
                         RepeatBehavior = RepeatBehavior.Forever,
                     });
 
+                    cropBoundsFillBrush.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation
+                    {
+                        From = Color.FromArgb(0, 0, 0, 0),
+                        To = (Color)ColorConverter.ConvertFromString("#7F000000"),
+                        Duration = TimeSpan.FromSeconds(0.25),
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+                    });
+
                     copyBtn.Content = "Copy Region";
                     UpdateCropOverlay();
+
+                    ESP.PlaySound("crop start");
                     return;
                 }
                 if (((string)btn.Content).ToLower().Contains("done"))
@@ -264,7 +337,7 @@ namespace FlintCapture2
                 await Task.Delay(1000);
                 copyBtn.ClearValue(Border.BackgroundProperty);
                 copyBtn.ClearValue(Border.BorderBrushProperty);
-                copyBtn.Content = "Copy Image";
+                copyBtn.Content = originalBtnContent;
             }
             if (btn.Name.Contains("save"))
             {
@@ -273,6 +346,7 @@ namespace FlintCapture2
                 encoder.Frames.Add(BitmapFrame.Create(_ssEditedImage));
 
                 string dir = PathIO.GetDirectoryName(ScreenshotFilePath) ?? ".";
+                dir = PathIO.Combine(dir, "..", "Saved Edits");
                 string fileName = $"FlintCapture_{PathIO.GetFileName(ScreenshotFilePath).Replace("copied_image_", "")}";
                 string filePath = PathIO.Combine(dir, fileName);
 
@@ -282,9 +356,10 @@ namespace FlintCapture2
                     encoder.Save(stream);
                 }
 
+                // leftoff: make a dedicated button for opening the image in file explorer instead of binding it to the save button
                 mainWin.ShowSavedScreenshotsDirectoryFileExplorer(filePath);
                 _savedWork = true;
-                Close();
+                RequestClose();
             }
         }
         #region Cropping logic
@@ -372,10 +447,10 @@ namespace FlintCapture2
             if (y + h > _ssImage.PixelHeight) h = _ssImage.PixelHeight - y;
 
             const int ABSOLUTE_MIN_LIMIT = 1;
-            bool cropSizeLimitClamped = false;
-
-            if (w < ABSOLUTE_MIN_LIMIT || h < ABSOLUTE_MIN_LIMIT)
-                cropSizeLimitClamped = true;
+            //byte cropSizeLimitClamped = (byte)((((w <= ABSOLUTE_MIN_LIMIT) ? 1 : 0) << 1) | ((h <= ABSOLUTE_MIN_LIMIT) ? 1 : 0)); // 0bAB A: Width B: Height
+            byte cropSizeLimitClamped = 0b00; // more readable version below:
+            if (w <= ABSOLUTE_MIN_LIMIT) cropSizeLimitClamped |= 0b10; // width flag
+            if (h <= ABSOLUTE_MIN_LIMIT) cropSizeLimitClamped |= 0b01; // height flag
 
             w = Math.Max(w, ABSOLUTE_MIN_LIMIT);
             h = Math.Max(h, ABSOLUTE_MIN_LIMIT);
@@ -389,7 +464,7 @@ namespace FlintCapture2
             if (w <= 0 || h <= 0)
             {
                 if (applyCrop)
-                    statusTextRun.Text = "Crop safety check shows bounding is too small?";
+                    statusTextRun.Text = "Crop safety check shows bounding is zero or negative?";
                 return null;
             }
 
@@ -418,10 +493,21 @@ namespace FlintCapture2
                     _ssImage = bitmap;
                     imgPreview.Source = bitmap;
 
-                    if (cropSizeLimitClamped)
-                        statusTextRun.Text = $"Crop was clamped to minimum limit. ({w} x {h})";
+                    if (cropSizeLimitClamped > 0)
+                    {
+                        string clampedDimension = cropSizeLimitClamped switch
+                        {
+                            0b10 => "width",
+                            0b01 => "height",
+                            0b11 => "width and height",
+                            _ => ""
+                        };
+                        statusTextRun.Text = $"Crop {clampedDimension} was clamped to minimum limit. ({w} x {h})";
+                    }
                     else
                         statusTextRun.Text = $"Image cropped to {w} x {h}.";
+
+                    ESP.PlaySound(cropSizeLimitClamped > 0 ? "crop end clamp" : "crop end alt");
                 }
 
                 return bitmap;

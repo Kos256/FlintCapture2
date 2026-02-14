@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlintCapture2"
         mc:Ignorable="d"
-            Title="New Screenshot" Height="600" Width="850" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" FontSize="16" BorderBrush="#FF00B8FD" FontFamily="{DynamicResource ExoRegular}">
+            Title="New Screenshot" Height="600" Width="850" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" FontSize="16" BorderBrush="#FF00B8FD" FontFamily="{DynamicResource ExoRegular}" WindowStartupLocation="CenterScreen">
     <Grid x:Name="RootGrid" Background="#FF00141C">
         <Grid x:Name="WindowBarGrid" VerticalAlignment="Top" Height="50" Background="#FF00B8FD">
             <TextBlock x:Name="winTitle" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="Black" FontSize="20" Text="{Binding Title, ElementName=window}"/>
