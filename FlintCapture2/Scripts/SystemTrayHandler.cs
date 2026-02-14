@@ -11,10 +11,11 @@ namespace FlintCapture2.Scripts
         public NOTIFYICONDATA TrayIconData;
         public MainWindow mainWin;
         public SystemTrayContextMenuWindow ctxMenuWindow;
-        public SystemTrayHandler(MainWindow mainWin, SystemTrayContextMenuWindow ctxMenuWindow)
+        public SystemTrayHandler(MainWindow mainWin)
         {
             this.mainWin = mainWin;
-            this.ctxMenuWindow = ctxMenuWindow;
+            ctxMenuWindow = new(mainWin);
+
         }
 
         public void SetupTrayIcon()
@@ -26,7 +27,7 @@ namespace FlintCapture2.Scripts
                 uID = 1,
                 uFlags = NativeSystemMethods.NIF_MESSAGE | NativeSystemMethods.NIF_ICON | NativeSystemMethods.NIF_TIP,
                 uCallbackMessage = NativeSystemMethods.WM_TRAYICON,
-                szTip = "FlintCapture Screenshotter"
+                szTip = "FlintCapture"
             };
 
             // Load icon from Resource (pack:// URI)
@@ -41,28 +42,18 @@ namespace FlintCapture2.Scripts
         }
         public void ShowContextMenu()
         {
-            MessageBox.Show("Context menu function is empty.", "Not implemented yet!", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        public void ShowContextMenuLegacy()
-        {
-            Point mpos = MouseCoordinatesHelper.GetMousePosition();
-            if (ctxMenuWindow == null) ctxMenuWindow = new SystemTrayContextMenuWindow(mainWin);
+            Point mpos = MouseCoordinatesHelper.GetScaledMousePosition();
             try
             {
-                ctxMenuWindow.Visibility = Visibility.Visible;
+                ctxMenuWindow.Left = mpos.X;
+                ctxMenuWindow.Top = mpos.Y;
+                ctxMenuWindow.ShowMenu();
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("has closed")) ctxMenuWindow = new SystemTrayContextMenuWindow(mainWin);
+                MessageBox.Show($"Exception while calling ShowMenu() in context menu window: {ex.Message}", "SystemTrayHandler.ShowContextMenu() failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-
-            // todo: replace 144 with a scaleable value, later on
-            //double systemDPI = MouseCoordinatesHelper.GetDpiSetting() / MouseCoordinatesHelper.GetDpiSetting() * 1.5;
-            double systemDPI = MouseCoordinatesHelper.GetDpiSetting() / 144;
-
-            ctxMenuWindow.Left = mpos.X * systemDPI - ctxMenuWindow.Width;
-            ctxMenuWindow.Top = mpos.Y * systemDPI - ctxMenuWindow.Height;
-            ctxMenuWindow.Show();
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]

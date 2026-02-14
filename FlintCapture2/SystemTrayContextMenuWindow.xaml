@@ -5,8 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlintCapture2"
         mc:Ignorable="d"
-        Title="SystemTrayContextMenuWindow" Height="450" Width="800">
+            Title="SystemTrayContextMenuWindow" Height="150" Width="150" WindowStyle="None" AllowsTransparency="True" Foreground="Black" Background="#B2002C3F" Topmost="True" ShowInTaskbar="False" FontFamily="{DynamicResource ExoRegular}">
+    <Window.Resources>
+        <Style x:Key="MenuItemStyle" TargetType="Border">
+            <EventSetter Event="MouseEnter" Handler="CtxMenuItem_MouseEnter"/>
+            <EventSetter Event="MouseLeave" Handler="CtxMenuItem_MouseLeave"/>
+            <EventSetter Event="MouseDown" Handler="CtxMenuItem_MouseDown"/>
+        </Style>
+
+        <DataTemplate x:Key="MenuItemTemplate">
+            <Border Background="#7F00B2FF" VerticalAlignment="Bottom" Height="20" Margin="5,5,5,0" Style="{StaticResource MenuItemStyle}">
+                <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="White" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
-        
+        <ItemsControl x:Name="MenuItemsControl" 
+          ItemTemplate="{StaticResource MenuItemTemplate}">
+
+            <!--
+            <ItemsControl.Items>
+                <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib">Item 1</sys:String>
+                <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib">Item 2</sys:String>
+            </ItemsControl.Items>
+            -->
+       
+        </ItemsControl>
     </Grid>
 </Window>
