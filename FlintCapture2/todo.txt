@@ -1,0 +1,5 @@
+make a small achievements tab on main app
+subheading on that page: "Do silly things, get silly achievements... ;)"
+
+and also make that tab greyed out until the user triggers an achievement
+maybe make that subheading a tooltip too
