@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -24,6 +25,26 @@ namespace FlintCapture2
         public const string AssemblyName = "FlintCapture2";
         public const string PackLocationFormat = $"pack://application:,,,/{AssemblyName};component/";
         public const string AppVersion = "2.0.0";
+    }
+
+    public class HelperMethods
+    {
+        public static void CreateFolderIfNonexistent(string path)
+        {
+            try
+            {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Failed to create directory :(",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+        }
     }
 
     public static class NativeSystemMethods
@@ -60,8 +81,45 @@ namespace FlintCapture2
 
     public class MouseCoordinatesHelper
     {
+        #region required imports
+        // imports
         [DllImport("gdi32.dll")]
         static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("Shcore.dll")]
+        private static extern int GetDpiForMonitor(
+            IntPtr hmonitor,
+            MonitorDpiType dpiType,
+            out uint dpiX,
+            out uint dpiY
+        );
+
+        [DllImport("User32.dll")]
+        private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+
+        // constants
+        private const uint MONITOR_DEFAULTTONEAREST = 2;
+
+        // enums and structs
+        private enum MonitorDpiType
+        {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI = 1,
+            MDT_RAW_DPI = 2,
+            MDT_DEFAULT = MDT_EFFECTIVE_DPI
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+        #endregion
 
         public static Point GetScreenMouseCoordinates()
         {
@@ -71,60 +129,34 @@ namespace FlintCapture2
             Point mousePosition = Mouse.GetPosition(null); // get the current mouse position
             return new Point((int)(mousePosition.X * (dpiX / 96.0)), (int)(mousePosition.Y * (dpiY / 96.0)));
         }
-
-        [DllImport("user32.dll")]
-        public static extern short GetAsyncKeyState(int vKey);
-        const int VK_SNAPSHOT = 0x2C;
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetCursorPos(out POINT lpPoint);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct POINT
-        {
-            public int X;
-            public int Y;
-        }
-
-        public static Point GetMousePosition()
+        public static Point GetMousePos()
         {
             GetCursorPos(out POINT p);
             return new Point(p.X, p.Y);
         }
-        public static Point GetMousePositionDPIAware(Window window)
+        public static Point GetScaledMousePosition()
         {
-            GetCursorPos(out POINT point);
+            GetCursorPos(out POINT p);
 
-            var source = PresentationSource.FromVisual(window);
-            if (source?.CompositionTarget != null)
-            {
-                double dpiX = source.CompositionTarget.TransformFromDevice.M11;
-                double dpiY = source.CompositionTarget.TransformFromDevice.M22;
+            IntPtr monitor = MonitorFromPoint(p, MONITOR_DEFAULTTONEAREST);
 
-                return new Point((int)(point.X / dpiX), (int)(point.Y / dpiY));
-            }
+            GetDpiForMonitor(monitor, MonitorDpiType.MDT_EFFECTIVE_DPI,
+                out uint dpiX, out uint dpiY);
 
-            return new Point(point.X, point.Y);
+            double scaleX = dpiX / 96;
+            double scaleY = dpiY / 96;
+
+            return new Point(p.X / scaleX, p.Y / scaleY);
         }
-
-        public static double GetDpiSetting()
+        public static Point GetScaledMousePosition(Window hwnd)
         {
-            IntPtr deviceContext = Marshal.AllocHGlobal(4);
-            try
-            {
-                int dpiX = GetDeviceCaps(deviceContext, 88); // DPI for X-axis (96)
-                int dpiY = GetDeviceCaps(deviceContext, 90); // DPI for Y-axis (96)
+            Point mposRaw = GetMousePos();
+            var source = PresentationSource.FromVisual(hwnd);
+            var transform = source.CompositionTarget.TransformFromDevice;
+            Point scaledPos = transform.Transform(mposRaw);
 
-                if (dpiX == 0 || dpiY == 0)
-                    return 96.0; // default to 96 DPI
-
-                return Math.Round((double)Math.Max(dpiX, dpiY), 2);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(deviceContext);
-            }
+            //Debug.WriteLine($"x:{mpos.X}, y:{mpos.Y}");
+            return scaledPos;
         }
     }
 }
