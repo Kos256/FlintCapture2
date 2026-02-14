@@ -36,15 +36,30 @@
     <None Remove="assets\icons\window controls\minimize.png" />
     <None Remove="assets\icons\window controls\red close.png" />
     <None Remove="assets\icons\window controls\white close.png" />
+    <None Remove="assets\sounds\crop end alt.wav" />
+    <None Remove="assets\sounds\crop end clamp.wav" />
+    <None Remove="assets\sounds\crop end.wav" />
+    <None Remove="assets\sounds\crop start.wav" />
     <None Remove="assets\sounds\dismiss all.wav" />
     <None Remove="assets\sounds\dismiss.wav" />
+    <None Remove="assets\sounds\editor close.wav" />
+    <None Remove="assets\sounds\editor open.wav" />
     <None Remove="assets\sounds\hover.wav" />
     <None Remove="assets\sounds\screenshot.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="assets\sounds\crop end alt.wav" />
+    <EmbeddedResource Include="assets\sounds\crop end clamp.wav" />
+    <EmbeddedResource Include="assets\sounds\crop end.wav" />
+    <EmbeddedResource Include="assets\sounds\crop start.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="assets\sounds\dismiss all.wav" />
     <EmbeddedResource Include="assets\sounds\dismiss.wav" />
+    <EmbeddedResource Include="assets\sounds\editor close.wav" />
+    <EmbeddedResource Include="assets\sounds\editor open.wav" />
     <EmbeddedResource Include="assets\sounds\hover.wav" />
     <EmbeddedResource Include="assets\sounds\screenshot.wav" />
   </ItemGroup>
