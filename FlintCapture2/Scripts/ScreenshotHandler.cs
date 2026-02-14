@@ -11,13 +11,17 @@ namespace FlintCapture2.Scripts
     public class ScreenshotHandler
     {
         public string ScreenshotDirectory = "";
+        private string rawScreenshotDir = "";
         private MainWindow mainWin;
-        public ScreenshotHandler(string screenshotDirectory, MainWindow mainWin)
+        public ScreenshotHandler(string appdataDirectory, MainWindow mainWin)
         {
             this.mainWin = mainWin;
 
-            ScreenshotDirectory = screenshotDirectory;
-            if (Directory.Exists(ScreenshotDirectory)) Directory.CreateDirectory(ScreenshotDirectory);
+            ScreenshotDirectory = Path.Combine(appdataDirectory, "Screenshots");
+            rawScreenshotDir = Path.Combine(ScreenshotDirectory, "Raw");
+            HelperMethods.CreateFolderIfNonexistent(rawScreenshotDir);
+            string savedEditsDir = Path.Combine(ScreenshotDirectory, "Saved Edits");
+            HelperMethods.CreateFolderIfNonexistent(savedEditsDir);
         }
 
         public List<NotificationWindow> notificationWindowQueue = new();
@@ -63,8 +67,7 @@ namespace FlintCapture2.Scripts
                     throw new Exception("Failed to retrieve clipboard image.");
 
                 string timestamp = DateTime.Now.ToString("ddMMyyyy_HHmmss_ffff");
-                string ssImagePath = Path.Combine(ScreenshotDirectory, $"copied_image_{timestamp}.png");
-
+                string ssImagePath = Path.Combine(ScreenshotDirectory, "Raw", $"copied_image_{timestamp}.png");
                 using (var fileStream = new FileStream(ssImagePath, FileMode.Create))
                 {
                     var encoder = new PngBitmapEncoder();
@@ -79,7 +82,7 @@ namespace FlintCapture2.Scripts
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save image: {ex.Message}", "Error",
+                MessageBox.Show($"Failed to save image: {ex.Message}", "Error in ScreenshotHandler.cs",
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 App.Current.Shutdown();
