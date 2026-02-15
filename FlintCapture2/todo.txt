@@ -15,3 +15,5 @@ add the ability to change the main folder from AppData/Local/FlintCapture/ to an
 3. if there is data in current folder AND new folder, ask user to:
 - attempt to transfer whatever it can into the new folder
 - skip and let the user transfer themselves manually
+
+make the crop box draggable from the middle to move the entire selection
