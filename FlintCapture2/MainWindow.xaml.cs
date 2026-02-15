@@ -55,72 +55,6 @@ namespace FlintCapture2
         {
             InitializeComponent();
 
-#if true
-            if (PrtScBindedToSnippingTool())
-            {
-                var result = MessageBox.Show("The system settings allow PrtSc to open snipping tool. FlintCapture needs that setting turned off (because it's a snipping tool replacement, duh)." +
-                    "\n\nDo you want to turn that setting off? (You can always turn it back on in windows settings)",
-                    "FlintCapture",
-                    MessageBoxButton.OKCancel,
-                    MessageBoxImage.Warning
-                );
-                if (result == MessageBoxResult.OK)
-                {
-                    try
-                    {
-                        PrtScBindedToSnippingTool(false);
-                        if (PrtScBindedToSnippingTool()) // if the setting is still true, quit
-                        {
-                            throw new Exception("Failed to change setting, the user will have to change it themselves.")
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message,
-                            "FlintCapture",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error
-                        );
-                        App.Current.Shutdown();
-                        return;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("FlintCapture cannot continue if PrtSc is binded to snipping tool!\nExiting...",
-                        "FlintCapture",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error
-                    );
-                    App.Current.Shutdown();
-                    return;
-                }
-            }
-#else
-            if (PrtScBindedToSnippingTool())
-            {
-                while (PrtScBindedToSnippingTool())
-                {
-                    var result = MessageBox.Show("The system settings allow PrtSc to open snipping tool. FlintCapture needs that setting turned off (you might need to sign out and log back into windows)." +
-                        "\n\nPlease turn it off and retry. Or hit cancel to quit FlintCapture.\n",
-                        "FlintCapture",
-                        MessageBoxButton.RetryCancel,
-                        MessageBoxImage.Warning
-                    );
-                    if (result == MessageBoxResult.Retry)
-                    {
-                        // do nothing, and let the loop run again
-                    }
-                    else
-                    {
-                        App.Current.Shutdown();
-                        return;
-                    }
-                }
-            }
-#endif
-
-
             cancelTokenSources = new List<CancellationTokenSource>()
             {
                 new() // OnFrame PrtSc listener loop
@@ -148,26 +82,6 @@ namespace FlintCapture2
             );
 
             CompositionTarget.Rendering += OnFrame;
-        }
-
-        private bool PrtScBindedToSnippingTool(bool? enabled = null)
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Keyboard", writable: true);
-
-            if (enabled == null)
-            {
-                object value = key?.GetValue("PrintScreenKeyForSnippingEnabled");
-                return value is int intValue && intValue == 1;
-            }
-            else
-            {
-                key?.SetValue(
-                    "PrintScreenKeyForSnippingEnabled",
-                    enabled.Value ? 1 : 0,
-                    RegistryValueKind.DWord
-                );
-                return enabled.Value;
-            }
         }
 
         public void ShowSavedScreenshotsDirectoryFileExplorer(string? path)
