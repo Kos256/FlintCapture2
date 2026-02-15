@@ -3,3 +3,8 @@ subheading on that page: "Do silly things, get silly achievements... ;)"
 
 and also make that tab greyed out until the user triggers an achievement
 maybe make that subheading a tooltip too
+
+make it so that you can choose between the screenshot image handler:
+1. native windows screenshot
+or
+2. FlintCapture screenshoter
