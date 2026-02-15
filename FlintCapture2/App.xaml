@@ -77,6 +77,55 @@
             </Setter>
         </Style>
 
+        <!-- Default styling for an icon button -->
+        <SolidColorBrush x:Key="IconButtonPrmary.Static.Background" Color="#FF00435D"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Static.Border" Color="#FF00B7FF"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.MouseOver.Background" Color="#FF006891"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.MouseOver.Border" Color="#FF0098D5"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Pressed.Background" Color="#FF002939"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Pressed.Border" Color="#FF6BC0FF"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Disabled.Background" Color="#7F4F4F4F"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Disabled.Border" Color="#7FFFFFFF"/>
+        <SolidColorBrush x:Key="IconButtonPrmary.Disabled.Foreground" Color="#B2000000"/>
+        <Style x:Key="IconButtonStylePrimary" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Styling for notificaton buttons -->
         <Color x:Key="BtnNotifPrimary.PalettePrimary">#FF00B0FF</Color>
         <Color x:Key="BtnNotifPrimary.PaletteSecondary">Transparent</Color>

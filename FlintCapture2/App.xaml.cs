@@ -1,8 +1,11 @@
-﻿using System.Configuration;
+﻿using Microsoft.Win32;
+using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using NOTIFYICONDATA = FlintCapture2.Scripts.SystemTrayHandler.NOTIFYICONDATA;
 
@@ -14,7 +17,21 @@ namespace FlintCapture2
     public partial class App : Application
     {
         public MainWindow? mainWin;
+        public DialogBoxWindow? initDbox;
         protected override void OnStartup(StartupEventArgs e)
+        {
+            if (HelperMethods.PrtScBindedToSnippingTool())
+            {
+                initDbox = new(DialogBoxWindow.DialogType.SnippingToolEnabled);
+                initDbox.Show();
+            }
+            else
+            {
+                DBoxFlagContinueMainWindow();
+            }
+        }
+
+        public void DBoxFlagContinueMainWindow()
         {
             mainWin = new();
             mainWin.Show();
@@ -27,8 +44,29 @@ namespace FlintCapture2
         public const string AppVersion = "2.0.0";
     }
 
+
     public class HelperMethods
     {
+        public static bool PrtScBindedToSnippingTool(bool? enabled = null)
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Keyboard", writable: true);
+
+            if (enabled == null)
+            {
+                object value = key?.GetValue("PrintScreenKeyForSnippingEnabled");
+                if (value == null) return false; // probably windows 10, since that feature does not exist on windows 10 so no need to check for it
+                return value is int intValue && intValue == 1;
+            }
+            else
+            {
+                key?.SetValue(
+                    "PrintScreenKeyForSnippingEnabled",
+                    enabled.Value ? 1 : 0,
+                    RegistryValueKind.DWord
+                );
+                return enabled.Value;
+            }
+        }
         public static void CreateFolderIfNonexistent(string path)
         {
             try
