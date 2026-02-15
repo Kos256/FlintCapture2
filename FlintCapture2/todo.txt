@@ -23,3 +23,6 @@ add feedback (a small notification) that tells user that flint capture is runnin
 change in NotificationWindow intro animation:
 - don't animate Left property of window
 - instead animate margin property of its RootGrid
+
+when you start annotating with a drawing tablet for thr first time:
+popup, "if you don't want pressure sensitivity affecting your annotations, you can disable it __here__"
