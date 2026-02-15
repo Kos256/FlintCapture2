@@ -69,6 +69,10 @@ namespace FlintCapture2
                     try
                     {
                         PrtScBindedToSnippingTool(false);
+                        if (PrtScBindedToSnippingTool()) // if the setting is still true, quit
+                        {
+                            throw new Exception("Failed to change setting, the user will have to change it themselves.")
+                        }
                     }
                     catch (Exception ex)
                     {
