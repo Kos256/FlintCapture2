@@ -17,3 +17,5 @@ add the ability to change the main folder from AppData/Local/FlintCapture/ to an
 - skip and let the user transfer themselves manually
 
 make the crop box draggable from the middle to move the entire selection
+
+add feedback (a small notification) that tells user that flint capture is running
