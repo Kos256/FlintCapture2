@@ -78,6 +78,12 @@ namespace FlintCapture2
                     bodyMsg.Inlines.Add(new Run("Do you want to disable that setting?"));
                     bodyMsg.Inlines.Add(new Run("\n(Don't worry! You can always turn it back on in windows settings)") { Foreground = Brushes.LightGreen, FontSize = 14 });
                     dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
+                    TextBlock tooltip = new();
+                    tooltip.Inlines.Add(new Run("Pressing this will "));
+                    tooltip.Inlines.Add(new Underline(new Run("close FlintCapture")) { Foreground = Brushes.Black, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+                    tooltip.Inlines.Add(new Run("."));
+                    closeBtn.ToolTip = tooltip;
+                    closeBtn.Click += dboxClose_Generic;
                     dboxBtnPrimary.Click += dboxPrimary_SnippingTool;
                     ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Disable") { Foreground = Brushes.Lime, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
                     ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run(" snipping tool!") { Foreground = Brushes.Lime });
@@ -90,12 +96,17 @@ namespace FlintCapture2
             }
         }
 
+
         private async void DialogBoxIntro()
         {
             ESP.PlaySound("dbox in");
 
             bodyMsg.Opacity = 0;
             dboxIcon.Opacity = 0;
+            RootGrid.Opacity = 0;
+
+            await Task.Delay(50); // a little delay to match up visuals with the SFX
+
             RootGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
             {
                 From = 0,
@@ -137,7 +148,21 @@ namespace FlintCapture2
 
         private async void DialogBoxOutro()
         {
-            RootGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
+            DoubleAnimation fadeOutHalfSec = new DoubleAnimation
+            {
+                To = 0,
+                Duration = TimeSpan.FromSeconds(0.4),
+                EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut },
+            };
+
+            ESP.PlaySound("dbox out");
+
+            //await Task.Delay(50); // a little delay to match up visuals with the SFX
+
+            bodyMsg.BeginAnimation(OpacityProperty, fadeOutHalfSec);
+            dboxIcon.BeginAnimation(OpacityProperty, fadeOutHalfSec);
+            btnContainerGrid.BeginAnimation(OpacityProperty, fadeOutHalfSec);
+            RootGrid.BeginAnimation(WidthProperty, new DoubleAnimation
             {
                 To = 0,
                 Duration = TimeSpan.FromSeconds(0.5),
@@ -208,6 +233,13 @@ namespace FlintCapture2
                     }
                 }
             }
+        }
+
+        private async void dboxClose_Generic(object sender, RoutedEventArgs e)
+        {
+            DialogBoxOutro();
+            await Task.Delay(4000);
+            App.Current.Shutdown();
         }
 
         private async void dboxPrimary_SnippingTool(object sender, RoutedEventArgs e)

@@ -17,7 +17,7 @@
         <TextBlock x:Name="dboxTitle" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="FlintCapture" VerticalAlignment="Top" FontSize="24" Foreground="#FF00B0FF" Width="390"/>
         <svgc:SvgViewbox x:Name="dboxIcon" Source="pack://application:,,,/FlintCapture2;component/assets/icons/warn.svg" Width="80" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,10,0,0"/>
         <TextBlock x:Name="bodyMsg" FontSize="16" HorizontalAlignment="Left" TextAlignment="Justify" Margin="120,50,20,0" TextWrapping="Wrap" Text="Body Message" VerticalAlignment="Top"/>
-        <Grid x:Name="btnHousingGrid" FlowDirection="RightToLeft" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="295" Margin="0,0,10,10">
+        <Grid x:Name="btnContainerGrid" FlowDirection="RightToLeft" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="295" Margin="0,0,10,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
