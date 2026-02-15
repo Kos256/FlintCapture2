@@ -73,7 +73,7 @@ namespace FlintCapture2
                     //bodyMsg.Text = "The system settings allow PrtSc to open snipping tool. FlintCapture needs that setting turned off. Do you want to turn that setting off? (You can always turn it back on in windows settings)";
                     bodyMsg.Text = "";
                     bodyMsg.Inlines.Add(new Run("The system settings allow PrtSc to open snipping tool. FlintCapture needs that setting "));
-                    bodyMsg.Inlines.Add(new Underline(new Run("turned off.")) { FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+                    bodyMsg.Inlines.Add(new Underline(new Run("turned off.")) { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")), FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
                     bodyMsg.Inlines.Add(new LineBreak() { FontSize = 7 });
                     bodyMsg.Inlines.Add(new Run("Do you want to disable that setting?"));
                     bodyMsg.Inlines.Add(new Run("\n(Don't worry! You can always turn it back on in windows settings)") { Foreground = Brushes.LightGreen, FontSize = 14 });
