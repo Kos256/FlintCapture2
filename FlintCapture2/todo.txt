@@ -19,3 +19,7 @@ add the ability to change the main folder from AppData/Local/FlintCapture/ to an
 make the crop box draggable from the middle to move the entire selection
 
 add feedback (a small notification) that tells user that flint capture is running
+
+change in NotificationWindow intro animation:
+- don't animate Left property of window
+- instead animate margin property of its RootGrid
