@@ -32,7 +32,12 @@
     <None Remove="assets\icons\app.ico" />
     <None Remove="assets\icons\app.png" />
     <None Remove="assets\icons\appNew.ico" />
+    <None Remove="assets\icons\moai.svg" />
+    <None Remove="assets\icons\snipping tool reject.svg" />
+    <None Remove="assets\icons\warn.svg" />
+    <None Remove="assets\icons\window controls\close white.svg" />
     <None Remove="assets\icons\window controls\close.png" />
+    <None Remove="assets\icons\window controls\close.svg" />
     <None Remove="assets\icons\window controls\minimize.png" />
     <None Remove="assets\icons\window controls\red close.png" />
     <None Remove="assets\icons\window controls\white close.png" />
@@ -40,6 +45,7 @@
     <None Remove="assets\sounds\crop end clamp.wav" />
     <None Remove="assets\sounds\crop end.wav" />
     <None Remove="assets\sounds\crop start.wav" />
+    <None Remove="assets\sounds\dbox in.wav" />
     <None Remove="assets\sounds\dismiss all.wav" />
     <None Remove="assets\sounds\dismiss.wav" />
     <None Remove="assets\sounds\editor close.wav" />
@@ -49,10 +55,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="assets\icons\snipping tool reject.svg" />
+    <Resource Include="assets\icons\warn.svg" />
+    <Resource Include="assets\icons\window controls\close white.svg" />
     <EmbeddedResource Include="assets\sounds\crop end alt.wav" />
     <EmbeddedResource Include="assets\sounds\crop end clamp.wav" />
     <EmbeddedResource Include="assets\sounds\crop end.wav" />
     <EmbeddedResource Include="assets\sounds\crop start.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox in.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,6 +76,8 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="SharpVectors" Version="1.8.5" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -92,7 +104,9 @@
     <Resource Include="assets\icons\app.ico" />
     <Resource Include="assets\icons\app.png" />
     <Resource Include="assets\icons\appNew.ico" />
+    <Resource Include="assets\icons\moai.svg" />
     <Resource Include="assets\icons\window controls\close.png" />
+    <Resource Include="assets\icons\window controls\close.svg" />
     <Resource Include="assets\icons\window controls\minimize.png" />
     <Resource Include="assets\icons\window controls\red close.png" />
     <Resource Include="assets\icons\window controls\white close.png" />
