@@ -43,6 +43,7 @@ namespace FlintCapture2
             this.ssHandler = ssHandler;
             Timestamp = timestamp;
             ScreenshotFilePath = ssfp;
+            ShowActivated = false;
 
             MainGrid.Margin = new(0, 320, 0, 0);
             Left = SystemParameters.WorkArea.Width /*- 20*/;
