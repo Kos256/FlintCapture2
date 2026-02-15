@@ -46,6 +46,7 @@
     <None Remove="assets\sounds\crop end.wav" />
     <None Remove="assets\sounds\crop start.wav" />
     <None Remove="assets\sounds\dbox in.wav" />
+    <None Remove="assets\sounds\dbox out.wav" />
     <None Remove="assets\sounds\dismiss all.wav" />
     <None Remove="assets\sounds\dismiss.wav" />
     <None Remove="assets\sounds\editor close.wav" />
@@ -63,6 +64,7 @@
     <EmbeddedResource Include="assets\sounds\crop end.wav" />
     <EmbeddedResource Include="assets\sounds\crop start.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox out.wav" />
   </ItemGroup>
 
   <ItemGroup>
