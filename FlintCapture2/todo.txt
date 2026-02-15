@@ -8,3 +8,10 @@ make it so that you can choose between the screenshot image handler:
 1. native windows screenshot
 or
 2. FlintCapture screenshoter
+
+add the ability to change the main folder from AppData/Local/FlintCapture/ to any custom location and handle it in 3 cases:
+1. make a new folder at new location, migrate existing data to new location
+2. if data seems to be empty, just choose the new folder without migrating
+3. if there is data in current folder AND new folder, ask user to:
+- attempt to transfer whatever it can into the new folder
+- skip and let the user transfer themselves manually
