@@ -155,6 +155,10 @@ namespace FlintCapture2
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut },
             };
 
+            closeBtn.IsEnabled = false;
+            dboxBtnPrimary.IsEnabled = false;
+            dboxBtnSecondary.IsEnabled = false;
+
             ESP.PlaySound("dbox out");
 
             //await Task.Delay(50); // a little delay to match up visuals with the SFX
