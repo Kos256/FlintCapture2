@@ -45,7 +45,7 @@ namespace FlintCapture2
     {
         public const string AssemblyName = "FlintCapture2";
         public const string PackLocationFormat = $"pack://application:,,,/{AssemblyName};component/";
-        public const string AppVersion = "2.0.0";
+        public const string AppVersion = "2.0.1";
     }
 
 

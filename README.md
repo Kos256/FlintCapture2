@@ -1,4 +1,4 @@
-# FlintCapture 2.0.0
+# FlintCapture 2.0.1
 FlintCapture v1's codebase got out of hand, so I tried again with a new codebase. So don't be confused if you can't find v1, it's been replaced by v2 ;)
 > [!NOTE]
 > Despite the version being 2.x.x, it is still very much an alpha build of FlintCapture, so don't expect anything ✨ *finished n fancy* ✨ up until 2.2.x ¯\\_(ツ)\_/¯
