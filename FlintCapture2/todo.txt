@@ -26,3 +26,5 @@ change in NotificationWindow intro animation:
 
 when you start annotating with a drawing tablet for thr first time:
 popup, "if you don't want pressure sensitivity affecting your annotations, you can disable it __here__"
+
+make a timer function that snaps the screenshot after a few seconds
