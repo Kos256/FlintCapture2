@@ -30,6 +30,10 @@ namespace FlintCapture2
                 DBoxFlagContinueMainWindow();
             }
         }
+        protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
+        {
+            base.OnSessionEnding(e);
+        }
 
         public void DBoxFlagContinueMainWindow()
         {

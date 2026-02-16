@@ -45,8 +45,10 @@ namespace FlintCapture2.Scripts
             Point mpos = MouseCoordinatesHelper.GetScaledMousePosition();
             try
             {
-                ctxMenuWindow.Left = mpos.X;
-                ctxMenuWindow.Top = mpos.Y;
+                //ctxMenuWindow.Left = mpos.X;
+                //ctxMenuWindow.Top = mpos.Y;
+                ctxMenuWindow.Left = SystemParameters.WorkArea.Width - ctxMenuWindow.Width;
+                ctxMenuWindow.Top = SystemParameters.WorkArea.Height - ctxMenuWindow.Height;
                 ctxMenuWindow.ShowMenu();
             }
             catch (Exception ex)

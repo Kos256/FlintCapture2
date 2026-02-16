@@ -32,12 +32,37 @@ namespace FlintCapture2
                 { "Screenshot history", () => MIHistory() },
                 { "Exit", () => MIExit() }
             };
+            LoadMenuItems();
         }
 
         public void ShowMenu()
         {
             Show();// leftoff: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
             Activate();
+
+            mainWin.GMouseHook.LeftMouseDown += GMouseHook_MouseDown;
+            mainWin.GMouseHook.MiddleMouseDown += GMouseHook_MouseDown;
+            mainWin.GMouseHook.RightMouseDown += GMouseHook_MouseDown;
+        }
+
+        private async void GMouseHook_MouseDown(object? sender, Scripts.MouseHookEventArgs e)
+        {
+            await Task.Delay(50);
+            if (!IsActive) Hide();
+        }
+
+        private void LoadMenuItems()
+        {
+            var items = new List<string>
+            {
+                "Open app",
+                "Screenshot history",
+                "Exit"
+            };
+            // todo: ask chatgpt how to set top element alternation index for different margins for first item
+            // todo: ask chatgpt how to set certain elements to bottom aligned, like exit button, maybe add blue line seperator?
+
+            MenuItemsControl.ItemsSource = items;
         }
 
         // MI<func> = Menu Item func

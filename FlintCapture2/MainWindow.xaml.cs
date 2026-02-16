@@ -38,6 +38,7 @@ namespace FlintCapture2
         /// Screenshot handler script
         /// </summary>
         public ScreenshotHandler SSHandler;
+        public GlobalMouseHook GMouseHook;
 
         private List<CancellationTokenSource> cancelTokenSources;
         private Stopwatch globalStopwatch;
@@ -163,6 +164,7 @@ namespace FlintCapture2
             var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
             hwndSource?.AddHook(WndProc); // Hook into WndProc to capture tray events
 
+            GMouseHook = new();
             SystemTray = new(this);
             SystemTray.SetupTrayIcon();
             ctxMenuWindow = SystemTray.ctxMenuWindow;
