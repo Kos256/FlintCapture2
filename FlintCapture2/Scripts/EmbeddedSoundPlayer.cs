@@ -270,7 +270,13 @@ namespace FlintCapture2.Scripts
             mixer.AddMixerInput(new PausableSampleProvider(this));
         }
 
+        /// <summary>
+        /// Total duration of this SoundInstance's audio source as a TimeSpan.
+        /// </summary>
         public TimeSpan Duration => TimeSpan.FromSeconds((double)_sound.AudioData.Length / (_sound.WaveFormat.SampleRate * _sound.WaveFormat.Channels));
+        /// <summary>
+        /// Current position of this SoundInstance's playhead on the audio source.
+        /// </summary>
         public TimeSpan Position => TimeSpan.FromSeconds((double)_source.Position / (_sound.WaveFormat.SampleRate * _sound.WaveFormat.Channels));
         public float Volume { get => _volumeProvider.Volume; set => _volumeProvider.Volume = Math.Clamp(value, 0f, 1f); }
 
