@@ -22,7 +22,7 @@ namespace FlintCapture2
         {
             if (HelperMethods.PrtScBindedToSnippingTool())
             {
-                initDbox = new(DialogBoxWindow.DialogType.SnippingToolEnabled);
+                initDbox = new(DialogBoxWindow.DialogType.SnippingToolTempDisabledDisclaimer);
                 initDbox.Show();
             }
             else
@@ -33,6 +33,11 @@ namespace FlintCapture2
         protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
         {
             base.OnSessionEnding(e);
+
+            if (mainWin != null)
+            {
+                mainWin.GMouseHook.Dispose();
+            }
         }
 
         public void DBoxFlagContinueMainWindow()

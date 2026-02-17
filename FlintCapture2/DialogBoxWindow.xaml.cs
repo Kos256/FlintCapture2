@@ -27,6 +27,7 @@ namespace FlintCapture2
             SnippingToolEnabledWarning = 1,     // snipping tool error v2 (attempts to change setting on its own)
             SnippingToolEnabledError = 2,       // snipping tool error v1 (tells the user to change setting)
             SnippingToolEnabled = 3,            // snipping tool error v3 (v2 but custom dbox)
+            SnippingToolTempDisabledDisclaimer = 4 // RegisterHotkey has disabled snipping tool on PrtSc until the app closes
         };
         public DialogType dboxType;
         public DialogBoxWindow(DialogType dboxType)
@@ -38,6 +39,12 @@ namespace FlintCapture2
             ((TextBlock)dboxBtnPrimary.Content).Inlines.Clear();
             ((TextBlock)dboxBtnSecondary.Content).Inlines.Clear();
             dboxBtnSecondary.Visibility = Visibility.Hidden;
+
+            TextBlock tooltip = new();
+            tooltip.Inlines.Add(new Run("Pressing this will "));
+            tooltip.Inlines.Add(new Underline(new Run("close FlintCapture")) { Foreground = Brushes.Black, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+            tooltip.Inlines.Add(new Run("."));
+            closeBtn.ToolTip = tooltip;
 
             Activated += (s, e) =>
             {
@@ -77,16 +84,33 @@ namespace FlintCapture2
                     bodyMsg.Inlines.Add(new LineBreak() { FontSize = 7 });
                     bodyMsg.Inlines.Add(new Run("Do you want to disable that setting?"));
                     bodyMsg.Inlines.Add(new Run("\n(Don't worry! You can always turn it back on in windows settings)") { Foreground = Brushes.LightGreen, FontSize = 14 });
+                    
                     dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
-                    TextBlock tooltip = new();
-                    tooltip.Inlines.Add(new Run("Pressing this will "));
-                    tooltip.Inlines.Add(new Underline(new Run("close FlintCapture")) { Foreground = Brushes.Black, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
-                    tooltip.Inlines.Add(new Run("."));
-                    closeBtn.ToolTip = tooltip;
+                    
                     closeBtn.Click += dboxClose_Generic;
                     dboxBtnPrimary.Click += dboxPrimary_SnippingTool;
+                    
                     ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Disable") { Foreground = Brushes.Lime, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
                     ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run(" snipping tool!") { Foreground = Brushes.Lime });
+
+                    DialogBoxIntro();
+                    break;
+
+                case DialogType.SnippingToolTempDisabledDisclaimer:
+                    bodyMsg.Text = "";
+                    bodyMsg.Inlines.Add(new Run("Disclaimer! ") { Foreground = Brushes.Yellow, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+                    bodyMsg.Inlines.Add(new Run("Pressing PrtSc will NOT open snipping tool and will instead take a screenshot with FlintCapture. \nDue to current user settings in FlintCapture, "));
+                    bodyMsg.Inlines.Add(new Run("this behavior is temporary. ") { Foreground = Brushes.Orange });
+                    bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, it's back to normal.") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
+                    
+                    dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
+                    
+                    closeBtn.Click += dboxClose_Generic;
+                    dboxBtnPrimary.Click += dboxDismiss_Generic;
+                    dboxBtnSecondary.Visibility = Visibility.Visible;
+
+                    ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Got it!"));
+                    ((TextBlock)dboxBtnSecondary.Content).Inlines.Add(new Run("Don't show again") { FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
 
                     DialogBoxIntro();
                     break;
@@ -96,7 +120,6 @@ namespace FlintCapture2
             }
         }
 
-
         private async void DialogBoxIntro()
         {
             ESP.PlaySound("dbox in");
@@ -104,6 +127,7 @@ namespace FlintCapture2
             bodyMsg.Opacity = 0;
             dboxIcon.Opacity = 0;
             RootGrid.Opacity = 0;
+            btnContainerGrid.Opacity = 0;
 
             await Task.Delay(50); // a little delay to match up visuals with the SFX
 
@@ -130,20 +154,19 @@ namespace FlintCapture2
                 EasingFunction = new ElasticEase { Oscillations = 2 },
             });
 
+            DoubleAnimation elemFadeIn = new DoubleAnimation
+            {
+                To = 1,
+                Duration = TimeSpan.FromSeconds(1),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+            };
+
             await Task.Delay(200);
-            dboxIcon.BeginAnimation(OpacityProperty, new DoubleAnimation
-            {
-                To = 1,
-                Duration = TimeSpan.FromSeconds(1),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            });
+            dboxIcon.BeginAnimation(OpacityProperty, elemFadeIn);
             await Task.Delay(300);
-            bodyMsg.BeginAnimation(OpacityProperty, new DoubleAnimation
-            {
-                To = 1,
-                Duration = TimeSpan.FromSeconds(1),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            });
+            bodyMsg.BeginAnimation(OpacityProperty, elemFadeIn);
+            await Task.Delay(300);
+            btnContainerGrid.BeginAnimation(OpacityProperty, elemFadeIn);
         }
 
         private async void DialogBoxOutro()
@@ -159,7 +182,7 @@ namespace FlintCapture2
             dboxBtnPrimary.IsEnabled = false;
             dboxBtnSecondary.IsEnabled = false;
 
-            ESP.PlaySound("dbox out");
+            var outroSound = ESP.PlayTracked("dbox out");
 
             //await Task.Delay(50); // a little delay to match up visuals with the SFX
 
@@ -244,6 +267,12 @@ namespace FlintCapture2
             DialogBoxOutro();
             await Task.Delay(4000);
             App.Current.Shutdown();
+        }
+        private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)
+        {
+            DialogBoxOutro();
+            await Task.Delay(1000);
+            ((App)Application.Current).DBoxFlagContinueMainWindow();
         }
 
         private async void dboxPrimary_SnippingTool(object sender, RoutedEventArgs e)
