@@ -58,7 +58,7 @@ namespace FlintCapture2
 
             cancelTokenSources = new List<CancellationTokenSource>()
             {
-                new() // OnFrame PrtSc listener loop
+                new() // OnFramePrtSc PrtSc listener loop
             };
 
             Closing += AppWantsToClose;
@@ -77,12 +77,12 @@ namespace FlintCapture2
 
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             FlintCaptureDataPath = PathIO.Combine(appdataPath, "FlintCapture");
+
             SSHandler = new(
                 FlintCaptureDataPath, // feed screenshot directory
+                ScreenshotHandler.HandlerType.SelfCapture,
                 this
             );
-
-            CompositionTarget.Rendering += OnFrame;
         }
 
         public void ShowSavedScreenshotsDirectoryFileExplorer(string? path)
@@ -99,12 +99,12 @@ namespace FlintCapture2
 
 
         public bool isHandlingPrintScreen = false;
-        private async void OnFrame(object? sender, EventArgs e)
+        public async void OnFramePrtSc(object? sender, EventArgs e)
         {
             if (isHandlingPrintScreen) return; // prevent multiple triggers
             if (cancelTokenSources[0].IsCancellationRequested)
             {
-                CompositionTarget.Rendering -= OnFrame;
+                CompositionTarget.Rendering -= OnFramePrtSc;
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace FlintCapture2
                 isHandlingPrintScreen = true;
                 try
                 {
-                    await SSHandler.HandlePrtScAsync();
+                    await SSHandler.LegacyHandlePrtScAsync();
                 }
                 finally
                 {
@@ -169,12 +169,11 @@ namespace FlintCapture2
             SystemTray.SetupTrayIcon();
             ctxMenuWindow = SystemTray.ctxMenuWindow;
         }
-        // leftoff at prtsc handler function
         private bool GetKeyStateAsBool(int VK)
         {
             return ((KeyStateHelper.GetAsyncKeyState(VK) & 0x8000) != 0);
         }
-    }
 
-    
+
+    }
 }

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using NAudio.Wasapi.CoreAudioApi.Interfaces;
+using FlintCapture2.Scripts;
 
 namespace FlintCapture2
 {
@@ -99,7 +100,7 @@ namespace FlintCapture2
                 case DialogType.SnippingToolTempDisabledDisclaimer:
                     bodyMsg.Text = "";
                     bodyMsg.Inlines.Add(new Run("Disclaimer! ") { Foreground = Brushes.Yellow, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
-                    bodyMsg.Inlines.Add(new Run("Pressing PrtSc will NOT open snipping tool and will instead take a screenshot with FlintCapture. \nDue to current user settings in FlintCapture, "));
+                    bodyMsg.Inlines.Add(new Run("Pressing PrtSc will NOT open snipping tool and will instead take a screenshot with FlintCapture. \nDue to your current user settings in FlintCapture, "));
                     bodyMsg.Inlines.Add(new Run("this behavior is temporary. ") { Foreground = Brushes.Orange });
                     bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, it's back to normal.") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
                     
@@ -169,6 +170,7 @@ namespace FlintCapture2
             btnContainerGrid.BeginAnimation(OpacityProperty, elemFadeIn);
         }
 
+        SoundInstance? dboxOutroSoundInstance;
         private async void DialogBoxOutro()
         {
             DoubleAnimation fadeOutHalfSec = new DoubleAnimation
@@ -182,7 +184,7 @@ namespace FlintCapture2
             dboxBtnPrimary.IsEnabled = false;
             dboxBtnSecondary.IsEnabled = false;
 
-            var outroSound = ESP.PlayTracked("dbox out");
+            dboxOutroSoundInstance = ESP.PlayTracked("dbox out");
 
             //await Task.Delay(50); // a little delay to match up visuals with the SFX
 
@@ -264,8 +266,20 @@ namespace FlintCapture2
 
         private async void dboxClose_Generic(object sender, RoutedEventArgs e)
         {
+            // hardcodedWait - false: depends on sound to fully end first. true: 4.0s no matter what, and is more reliable (sometimes sound driver may not be enabled and we dont want to create a depend)
+            bool hardcodedWait = true;
+           
             DialogBoxOutro();
-            await Task.Delay(4000);
+
+            if (hardcodedWait) await Task.Delay(4000);
+            else
+            {
+                if (dboxOutroSoundInstance != null)
+                {
+                    while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                        await Task.Delay(500); // prevent freezing, loop runs in 0.5ms interval
+                }
+            }
             App.Current.Shutdown();
         }
         private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)

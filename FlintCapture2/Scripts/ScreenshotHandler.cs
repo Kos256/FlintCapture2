@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static FlintCapture2.Scripts.ScreenshotHandler;
 
 namespace FlintCapture2.Scripts
 {
@@ -13,24 +15,60 @@ namespace FlintCapture2.Scripts
         public string ScreenshotDirectory = "";
         private string rawScreenshotDir = "";
         private MainWindow mainWin;
-        public ScreenshotHandler(string appdataDirectory, MainWindow mainWin)
+
+        public enum HandlerType
+        {
+            Unknown = 0,
+            WindowsClipboard = 1,
+            SelfCapture = 2,
+            Self_DXGI = 3,
+            Self_Blt = 4,
+            Self_IForgot = 5,
+        }
+        public HandlerType SelectedHandlerType = 0;
+
+        public ScreenshotHandler(string appdataDirectory, HandlerType handlerType, MainWindow mainWin)
         {
             this.mainWin = mainWin;
 
+            this.SelectedHandlerType = handlerType;
             ScreenshotDirectory = Path.Combine(appdataDirectory, "Screenshots");
             rawScreenshotDir = Path.Combine(ScreenshotDirectory, "Raw");
             HelperMethods.CreateFolderIfNonexistent(rawScreenshotDir);
             string savedEditsDir = Path.Combine(ScreenshotDirectory, "Saved Edits");
             HelperMethods.CreateFolderIfNonexistent(savedEditsDir);
+
+            switch (SelectedHandlerType)
+            {
+                case HandlerType.WindowsClipboard:
+                    CompositionTarget.Rendering += mainWin.OnFramePrtSc; // do not assign this, this is the legacy method that is replaced with RegisterHotkey
+                    break;
+
+                case HandlerType.SelfCapture:
+
+                    // leftoff latest!!!
+                    break;
+            }
+        }
+
+        public void RegisterKey()
+        {
+
         }
 
         public List<NotificationWindow> notificationWindowQueue = new();
+       
+        public async Task HandlePrtScAsync()
+        {
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="ClipboardWaitMS">Waits a specified number of milliseconds for the clipboard to catch up after the 'print screen' key has been pressed.</param>
         /// <returns></returns>
-        public async Task HandlePrtScAsync(int ClipboardWaitMS = 100)
+        public async Task LegacyHandlePrtScAsync(int ClipboardWaitMS = 100)
         {
             await Task.Delay(ClipboardWaitMS); // Wait for clipboard to catch up after PrintScreen
 
