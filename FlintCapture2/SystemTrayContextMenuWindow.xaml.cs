@@ -37,7 +37,7 @@ namespace FlintCapture2
 
         public void ShowMenu()
         {
-            Show();// leftoff: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
+            Show(); // leftoff: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
             Activate();
 
             mainWin.GMouseHook.LeftMouseDown += GMouseHook_MouseDown;

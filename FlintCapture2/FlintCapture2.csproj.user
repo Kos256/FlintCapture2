@@ -17,6 +17,9 @@
     <Compile Update="NotificationWindowImagePreview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Scripts\Controls\KosToggleButton.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="SystemTrayContextMenuWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

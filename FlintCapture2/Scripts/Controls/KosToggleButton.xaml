@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="FlintCapture2.Scripts.Controls.KosToggleButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlintCapture2.Scripts.Controls"
+             mc:Ignorable="d" 
+                      d:DesignHeight="40" d:DesignWidth="100">
+    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+        <Rectangle HorizontalAlignment="Left" Height="28" VerticalAlignment="Center" Width="28" Fill="{Binding ToggleBackground, RelativeSource={RelativeSource AncestorType=local:KosToggleButton}}" Stroke="White">
+            <Rectangle.LayoutTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="45"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Rectangle.LayoutTransform>
+        </Rectangle>
+        <Rectangle HorizontalAlignment="Right" Height="28" VerticalAlignment="Center" Width="28" Fill="Black" Stroke="White">
+            <Rectangle.LayoutTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="45"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Rectangle.LayoutTransform>
+        </Rectangle>
+        <Border BorderThickness="0,1,0,1" Margin="20,0,20,0" Background="Black" BorderBrush="White"/>
+
+    </Grid>
+</UserControl>
