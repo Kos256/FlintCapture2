@@ -27,6 +27,7 @@ namespace FlintCapture2
     {
         //private string _tempPath = PathIO.GetTempPath(); // check if any other stuff from FlintCapture1 relies on this before removing
         private string FlintCaptureDataPath;
+        public ScreenshotHandler.HandlerType SelectedCaptureType = ScreenshotHandler.HandlerType.Unknown;
 
         // windows:
         public MainAppWindow _appGuiWindow;
@@ -52,7 +53,7 @@ namespace FlintCapture2
         - "If it is a removable drive, make sure not to plug or unplug that drive after opening or before closing FlintCapture"
         */
 
-        public MainWindow()
+        public MainWindow(ScreenshotHandler.HandlerType SelectedCaptureType)
         {
             InitializeComponent();
 
@@ -73,6 +74,8 @@ namespace FlintCapture2
             globalStopwatch = new();
             globalStopwatch.Start();
 
+            this.SelectedCaptureType = SelectedCaptureType;
+
             _appGuiWindow = new MainAppWindow();
 
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -80,7 +83,7 @@ namespace FlintCapture2
 
             SSHandler = new(
                 FlintCaptureDataPath, // feed screenshot directory
-                ScreenshotHandler.HandlerType.SelfCapture,
+                SelectedCaptureType,
                 this
             );
         }

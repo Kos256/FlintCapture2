@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using FlintCapture2.Scripts;
+using Microsoft.Win32;
 using System.Configuration;
 using System.Data;
 using System.Globalization;
@@ -18,8 +19,11 @@ namespace FlintCapture2
     {
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
+        public ScreenshotHandler.HandlerType SelectedCaptureType;
         protected override void OnStartup(StartupEventArgs e)
         {
+            SelectedCaptureType = ScreenshotHandler.HandlerType.SelfCapture;
+
             if (HelperMethods.PrtScBindedToSnippingTool())
             {
                 initDbox = new(DialogBoxWindow.DialogType.SnippingToolTempDisabledDisclaimer);
@@ -42,7 +46,7 @@ namespace FlintCapture2
 
         public void DBoxFlagContinueMainWindow()
         {
-            mainWin = new();
+            mainWin = new(SelectedCaptureType);
             mainWin.Show();
         }
     }
