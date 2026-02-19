@@ -120,7 +120,7 @@ namespace FlintCapture2.Scripts
 
         private void SelfCaptureOnHotkey()
         {
-
+            // leftoff show a print msg or msgbox show
         }
 
         public List<NotificationWindow> notificationWindowQueue = new();
