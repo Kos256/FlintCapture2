@@ -170,6 +170,13 @@ namespace FlintCapture2
             GMouseHook = new();
             SystemTray = new(this);
             SystemTray.SetupTrayIcon();
+            SSHandler.InitalizeTriggerHotkey();
+
+            if (SelectedCaptureType == ScreenshotHandler.HandlerType.SelfCapture)
+            {
+                SSHandler.RegisterTriggerKey();
+            }
+
             ctxMenuWindow = SystemTray.ctxMenuWindow;
         }
         private bool GetKeyStateAsBool(int VK)
