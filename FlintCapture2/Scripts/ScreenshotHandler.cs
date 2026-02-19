@@ -1,9 +1,12 @@
-﻿using System;
+﻿using SharpVectors.Dom.Svg;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static FlintCapture2.Scripts.ScreenshotHandler;
@@ -12,6 +15,41 @@ namespace FlintCapture2.Scripts
 {
     public class ScreenshotHandler
     {
+        #region win32 imports
+        private const int HOTKEY_ID = 9000; // PrtSc
+        private const int WM_HOTKEY = 0x0312;
+
+        [DllImport("user32.dll")]
+        private static extern bool RegisterHotKey(
+            IntPtr hWnd,
+            int id,
+            uint fsModifiers,
+            uint vk);
+
+        [DllImport("user32.dll")]
+        private static extern bool UnregisterHotKey(
+            IntPtr hWnd,
+            int id);
+
+        private IntPtr HwndHook(
+            IntPtr hwnd,
+            int msg,
+            IntPtr wParam,
+            IntPtr lParam,
+            ref bool handled
+        )
+        {
+            if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID)
+            {
+                handled = true;
+                SelfCaptureOnHotkey();
+            }
+
+            return IntPtr.Zero;
+        }
+
+        #endregion
+
         public string ScreenshotDirectory = "";
         private string rawScreenshotDir = "";
         private MainWindow mainWin;
@@ -38,6 +76,8 @@ namespace FlintCapture2.Scripts
             string savedEditsDir = Path.Combine(ScreenshotDirectory, "Saved Edits");
             HelperMethods.CreateFolderIfNonexistent(savedEditsDir);
 
+            InitalizeTriggerHotkey();
+
             switch (SelectedHandlerType)
             {
                 case HandlerType.WindowsClipboard:
@@ -46,12 +86,39 @@ namespace FlintCapture2.Scripts
 
                 case HandlerType.SelfCapture:
 
-                    // leftoff latest!!!
+                    RegisterTriggerKey();
                     break;
             }
         }
 
-        public void RegisterKey()
+        public bool HotkeyRegistered = false;
+        private HwndSource hotkeySource;
+        private void InitalizeTriggerHotkey()
+        {
+            var helper = new WindowInteropHelper(mainWin);
+            hotkeySource = HwndSource.FromHwnd(helper.Handle);
+            hotkeySource.AddHook(HwndHook);
+        }
+        public void RegisterTriggerKey()
+        {
+            if (HotkeyRegistered) return;
+
+            var helper = new WindowInteropHelper(mainWin);
+            // leftoff latest latest leftoff
+            bool success = RegisterHotKey(helper.Handle, HOTKEY_ID, 0, 0x2C);
+            if (!success) throw new Exception("Failed to register PrtSc HKey");
+            HotkeyRegistered = true;
+        }
+        public void UnregisterTriggerHotkey()
+        {
+            if (!HotkeyRegistered) return;
+
+            var helper = new WindowInteropHelper(mainWin);
+            UnregisterHotKey(helper.Handle, HOTKEY_ID);
+
+        }
+
+        private void SelfCaptureOnHotkey()
         {
 
         }
