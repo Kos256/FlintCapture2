@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using NAudio.Wasapi.CoreAudioApi.Interfaces;
 using FlintCapture2.Scripts;
+using System.Diagnostics;
 
 namespace FlintCapture2
 {
@@ -43,7 +44,7 @@ namespace FlintCapture2
 
             TextBlock tooltip = new();
             tooltip.Inlines.Add(new Run("Pressing this will "));
-            tooltip.Inlines.Add(new Underline(new Run("close FlintCapture")) { Foreground = Brushes.Black, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+            tooltip.Inlines.Add(new Underline(new Run("close FlintCapture")) { FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
             tooltip.Inlines.Add(new Run("."));
             closeBtn.ToolTip = tooltip;
 
@@ -264,22 +265,76 @@ namespace FlintCapture2
             }
         }
 
+        enum DBoxCloseStrategy
+        {
+            FixedDelay,
+            WaitForSound,
+            WaitForSoundWithTimeout,
+            ChatGPT
+        }
         private async void dboxClose_Generic(object sender, RoutedEventArgs e)
         {
             // hardcodedWait - false: depends on sound to fully end first. true: 4.0s no matter what, and is more reliable (sometimes sound driver may not be enabled and we dont want to create a depend)
-            bool hardcodedWait = true;
+
+            DBoxCloseStrategy hardcodedWait = DBoxCloseStrategy.WaitForSoundWithTimeout;
+            /*
+             * 0 = close after 4.0s no matter what
+             * 1 = wait for the sound to end, then close
+             * 2 = wait for the sound to end, but if it takes longer than 10s, force close
+             * 3 = chatgpt's implementation of 2
+             */
            
             DialogBoxOutro();
-
-            if (hardcodedWait) await Task.Delay(4000);
-            else
+            
+            switch (hardcodedWait)
             {
-                if (dboxOutroSoundInstance != null)
-                {
-                    while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
-                        await Task.Delay(500); // prevent freezing, loop runs in 0.5ms interval
-                }
+                case (DBoxCloseStrategy.FixedDelay):
+                    await Task.Delay(4000);
+                    break;
+
+                case (DBoxCloseStrategy.WaitForSound):
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                            await Task.Delay(500); // prevent freezing, loop runs in 0.5s interval
+                    }
+                    break;
+
+                case (DBoxCloseStrategy.WaitForSoundWithTimeout):
+                    Stopwatch timer = new();
+                    timer.Start();
+
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                        {
+                            await Task.Delay(500); // prevent freezing, loop runs in 0.5s interval
+                            if (timer.Elapsed > TimeSpan.FromSeconds(10)) break;
+                        }
+                    }
+                    break;
+
+                case (DBoxCloseStrategy.ChatGPT):
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        var timeout = hardcodedWait == DBoxCloseStrategy.WaitForSoundWithTimeout
+                            ? TimeSpan.FromSeconds(10)
+                            : Timeout.InfiniteTimeSpan;
+
+                        var start = DateTime.UtcNow;
+
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                        {
+                            if (timeout != Timeout.InfiniteTimeSpan &&
+                                DateTime.UtcNow - start > timeout)
+                                break;
+
+                            await Task.Delay(200);
+                        }
+                    }
+                    break;
             }
+
             App.Current.Shutdown();
         }
         private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)
