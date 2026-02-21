@@ -37,7 +37,7 @@ namespace FlintCapture2
 
         public void ShowMenu()
         {
-            Show(); // leftoff: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
+            Show(); // todo: confirm whether i did this right: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
             Activate();
 
             mainWin.GMouseHook.LeftMouseDown += GMouseHook_MouseDown;
@@ -82,6 +82,13 @@ namespace FlintCapture2
         }
         private void MIExit()
         {
+            if (mainWin != null)
+            {
+                mainWin.GMouseHook.Dispose();
+            }
+
+            //HelperMethods.PrtScBindedToSnippingTool(true); // maybe restore the last setting??
+
             MenuItemClicked();
             App.Current.Shutdown();
         }
