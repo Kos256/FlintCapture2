@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<Version>2.0.2</Version>
   </PropertyGroup>
 
   <!-- Release-Specific (Contained) Settings -->
@@ -21,11 +22,17 @@
 	<DebugType>embedded</DebugType>
 	<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="assets\sounds\app close.wav" />
+    <None Remove="assets\sounds\app open.wav" />
+  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="assets\icons\snipping tool reject.svg" />
     <Resource Include="assets\icons\warn.svg" />
     <Resource Include="assets\icons\window controls\close white.svg" />
+    <EmbeddedResource Include="assets\sounds\app close.wav" />
+    <EmbeddedResource Include="assets\sounds\app open.wav" />
     <EmbeddedResource Include="assets\sounds\crop end alt.wav" />
     <EmbeddedResource Include="assets\sounds\crop end clamp.wav" />
     <EmbeddedResource Include="assets\sounds\crop end.wav" />
@@ -68,10 +75,10 @@
     <Resource Include="assets\fonts\Exo\Exo SemiBoldItalic.otf" />
     <Resource Include="assets\fonts\Exo\Exo Thin.otf" />
     <Resource Include="assets\fonts\Exo\Exo ThinItalic.otf" />
-    <Resource Include="assets\icons\app new.png" />
-    <Resource Include="assets\icons\app scaled.png" />
+    <Resource Include="assets\icons\app legacy 2.png" />
+    <Resource Include="assets\icons\app legacy scaled.png" />
     <Resource Include="assets\icons\app.ico" />
-    <Resource Include="assets\icons\app.png" />
+    <Resource Include="assets\icons\app legacy.png" />
     <Resource Include="assets\icons\appNew.ico" />
     <Resource Include="assets\icons\moai.svg" />
     <Resource Include="assets\icons\window controls\close.png" />

@@ -8,6 +8,9 @@
     <Compile Update="ImageEditWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="IndicatorWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="MainAppWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
