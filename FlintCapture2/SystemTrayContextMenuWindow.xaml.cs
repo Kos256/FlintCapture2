@@ -57,7 +57,8 @@ namespace FlintCapture2
             {
                 "Open app",
                 "Screenshot history",
-                "Exit"
+                "Exit",
+                "FORCE EXIT"
             };
             // todo: ask chatgpt how to set top element alternation index for different margins for first item
             // todo: ask chatgpt how to set certain elements to bottom aligned, like exit button, maybe add blue line seperator?
@@ -111,7 +112,15 @@ namespace FlintCapture2
         {
             if (sender is Border b)
             {
-                contextMenuActions[(b.Child as TextBlock).Text]();
+                try
+                {
+                    contextMenuActions[((TextBlock)b.Child).Text]();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error while selection context menu option!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
