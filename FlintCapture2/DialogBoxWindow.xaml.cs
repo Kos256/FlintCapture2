@@ -103,12 +103,13 @@ namespace FlintCapture2
                     bodyMsg.Inlines.Add(new Run("Disclaimer! ") { Foreground = Brushes.Yellow, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
                     bodyMsg.Inlines.Add(new Run("Pressing PrtSc will NOT open snipping tool and will instead take a screenshot with FlintCapture. \nDue to your current user settings in FlintCapture, "));
                     bodyMsg.Inlines.Add(new Run("this behavior is temporary. ") { Foreground = Brushes.Orange });
-                    bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, it's back to normal.") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
-                    
+                    //bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, it's back to normal.") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
+                    bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, you may turn it back on if you wish :)") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
+
                     dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
                     
                     closeBtn.Click += dboxClose_Generic;
-                    dboxBtnPrimary.Click += dboxDismiss_Generic;
+                    dboxBtnPrimary.Click += dboxPrimary_SnippingTool;
                     dboxBtnSecondary.Visibility = Visibility.Visible;
 
                     ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Got it!"));
@@ -366,6 +367,7 @@ namespace FlintCapture2
             }
 
             DialogBoxOutro();
+            await Task.Delay(1000);
             ((App)Application.Current).DBoxFlagContinueMainWindow();
 
         }
