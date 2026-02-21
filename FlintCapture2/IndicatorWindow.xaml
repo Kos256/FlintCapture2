@@ -1,0 +1,33 @@
+﻿<Window x:Class="FlintCapture2.IndicatorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlintCapture2"
+        mc:Ignorable="d"
+        Title="IndicatorWindow" Height="200" Width="400" Foreground="White" Background="{x:Null}" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" FontSize="18">
+    <Grid x:Name="RootGrid">
+        <Grid x:Name="popupBox" HorizontalAlignment="Center" Height="72" VerticalAlignment="Bottom" Width="169" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="popupScale" CenterX="0.5" CenterY="0.5"/>
+                    <SkewTransform/>
+                    <RotateTransform x:Name="popupRotation" Angle="0" CenterX="0.5" CenterY="0.5"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Grid.RenderTransform>
+            <Border BorderBrush="#FF00B7FF" BorderThickness="2,2,2,2" Background="#4C000000" Margin="10,0,10,0" RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform AngleX="-20"/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Border.RenderTransform>
+            </Border>
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Running!" VerticalAlignment="Center" TextAlignment="Center" Foreground="#FF00B7FF" FontFamily="{DynamicResource ExoBold}"/>
+        </Grid>
+
+    </Grid>
+</Window>

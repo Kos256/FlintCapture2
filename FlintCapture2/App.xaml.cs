@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
@@ -19,13 +20,18 @@ namespace FlintCapture2
     {
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
+        public IndicatorWindow? indicatorWin;
         public ScreenshotHandler.HandlerType SelectedCaptureType;
+        public bool WasSnippingToolEnabledBefore = false;
         protected override void OnStartup(StartupEventArgs e)
         {
             SelectedCaptureType = ScreenshotHandler.HandlerType.SelfCapture;
 
+            indicatorWin = new();
+
             if (HelperMethods.PrtScBindedToSnippingTool())
             {
+                WasSnippingToolEnabledBefore = true;
                 initDbox = new(DialogBoxWindow.DialogType.SnippingToolTempDisabledDisclaimer);
                 initDbox.Show();
             }
@@ -38,23 +44,21 @@ namespace FlintCapture2
         {
             base.OnSessionEnding(e);
 
-            if (mainWin != null)
-            {
-                mainWin.GMouseHook.Dispose();
-            }
         }
 
         public void DBoxFlagContinueMainWindow()
         {
             mainWin = new(SelectedCaptureType);
             mainWin.Show();
+            indicatorWin?.ShowIndicator();
         }
     }
     public static class PROJCONSTANTS
     {
         public const string AssemblyName = "FlintCapture2";
         public const string PackLocationFormat = $"pack://application:,,,/{AssemblyName};component/";
-        public const string AppVersion = "2.0.1";
+        public static Version AppVersion =>
+            Assembly.GetExecutingAssembly().GetName().Version!;
     }
 
 
