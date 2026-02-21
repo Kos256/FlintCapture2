@@ -25,7 +25,7 @@ namespace FlintCapture2
 
             ShowActivated = false;
             Left = SystemParameters.WorkArea.Width - Width;
-            Top = SystemParameters.WorkArea.Height - Height;
+            Top = SystemParameters.PrimaryScreenHeight - Height;
 
             popupBox.Margin = new(0, 0, 0, -popupBox.Height - 10);
         }
@@ -46,7 +46,7 @@ namespace FlintCapture2
 
             popupBox.BeginAnimation(MarginProperty, new ThicknessAnimation
             {
-                To = new(0, 0, 0, 50),
+                To = new(0, 0, 0, 90),
                 Duration = TimeSpan.FromSeconds(1.5),
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseOut }
             });
