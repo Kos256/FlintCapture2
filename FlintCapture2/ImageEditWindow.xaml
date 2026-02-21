@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlintCapture2"
         mc:Ignorable="d"
-            Title="New Screenshot" Height="600" Width="850" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" FontSize="16" BorderBrush="#FF00B8FD" FontFamily="{DynamicResource ExoRegular}" WindowStartupLocation="CenterScreen">
+            Title="New Screenshot" Height="600" Width="850" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" FontSize="16" BorderBrush="#FF00B8FD" FontFamily="{DynamicResource ExoRegular}" WindowStartupLocation="CenterScreen" MinHeight="400" MinWidth="600">
     <Grid x:Name="RootGrid" Background="#FF00141C">
         <Grid x:Name="WindowBarGrid" VerticalAlignment="Top" Height="50" Background="#FF00B8FD">
             <TextBlock x:Name="winTitle" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="Black" FontSize="20" Text="{Binding Title, ElementName=window}"/>
@@ -22,9 +22,9 @@
             <Rectangle x:Name="winbarCollider" Margin="0,0,120,0" Fill="Transparent"/>
         </Grid>
         <Border x:Name="windowFocusBorder" BorderBrush="{Binding BorderBrush, ElementName=window}" BorderThickness="1" d:IsLocked="True" d:IsHidden="True"/>
-        <Grid VerticalAlignment="Top" Margin="10,61,10,0" Height="450" Background="#0CFFFFFF">
+        <Grid Margin="10,61,10,90" Background="#0CFFFFFF">
             <TextBlock x:Name="loadingImgText" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Loading image..." VerticalAlignment="Center" FontSize="48" Foreground="#FF00B9FF"/>
-            <Image x:Name="imgPreview" HorizontalAlignment="Left"/>
+            <Image x:Name="imgPreview" HorizontalAlignment="Center"/>
             <InkCanvas x:Name="annotationCanvas" Background="{x:Null}" Visibility="Hidden">
                 <InkCanvas.DefaultDrawingAttributes>
                     <DrawingAttributes Color="Red"

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using ESP = FlintCapture2.Scripts.EmbeddedSoundPlayer;
 using PathIO = System.IO.Path;
@@ -57,6 +58,8 @@ namespace FlintCapture2
 
             tlHandle.DragDelta += (s, e) =>
             {
+                Rect imgBounds = GetImageBoundsInCropCanvas();
+
                 double left = Canvas.GetLeft(selectionRect);
                 double top = Canvas.GetTop(selectionRect);
 
@@ -66,7 +69,14 @@ namespace FlintCapture2
                 double newLeft = left + e.HorizontalChange;
                 double newTop = top + e.VerticalChange;
 
-                // Clamp so we don’t cross the fixed corner
+                // Clamp to image bounds
+                if (newLeft < imgBounds.Left)
+                    newLeft = imgBounds.Left;
+
+                if (newTop < imgBounds.Top)
+                    newTop = imgBounds.Top;
+
+                // Prevent crossing fixed bottom-right
                 if (right - newLeft < MIN_CROPSIZE)
                     newLeft = right - MIN_CROPSIZE;
 
@@ -84,12 +94,21 @@ namespace FlintCapture2
             };
             brHandle.DragDelta += (s, e) =>
             {
+                Rect imgBounds = GetImageBoundsInCropCanvas();
+
                 double left = Canvas.GetLeft(selectionRect);
                 double top = Canvas.GetTop(selectionRect);
 
                 // Current mouse-adjusted bottom-right position
                 double newRight = left + selectionRect.Width + e.HorizontalChange;
                 double newBottom = top + selectionRect.Height + e.VerticalChange;
+
+                // Clamp to image bounds
+                if (newRight > imgBounds.Right)
+                    newRight = imgBounds.Right;
+
+                if (newBottom > imgBounds.Bottom)
+                    newBottom = imgBounds.Bottom;
 
                 double newWidth = newRight - left;
                 double newHeight = newBottom - top;
@@ -389,34 +408,38 @@ namespace FlintCapture2
         }
         private void UpdateCropOverlay()
         {
-            double left = Canvas.GetLeft(selectionRect);
-            double top = Canvas.GetTop(selectionRect);
-            double width = selectionRect.Width;
-            double height = selectionRect.Height;
-
-            // Prevent divide-by-zero drama
             if (imgPreview.ActualWidth <= 0 || imgPreview.ActualHeight <= 0 || _ssImage == null)
                 return;
 
-            // Scale factors from UI space to image space
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            // Canvas space (for overlay drawing)
+            double canvasLeft = Canvas.GetLeft(selectionRect);
+            double canvasTop = Canvas.GetTop(selectionRect);
+            double width = selectionRect.Width;
+            double height = selectionRect.Height;
+
+            // Image-relative space (for pixel math)
+            double imageLeft = canvasLeft - imgBounds.X;
+            double imageTop = canvasTop - imgBounds.Y;
+
             double scaleX = _ssImage.PixelWidth / imgPreview.ActualWidth;
             double scaleY = _ssImage.PixelHeight / imgPreview.ActualHeight;
 
-            int imageX = (int)Math.Round(left * scaleX);
-            int imageY = (int)Math.Round(top * scaleY);
+            int imageX = (int)Math.Round(imageLeft * scaleX);
+            int imageY = (int)Math.Round(imageTop * scaleY);
             int imageW = (int)Math.Round(width * scaleX);
             int imageH = (int)Math.Round(height * scaleY);
 
             statusTextRun.Text =
                 $"Selected {imageW} x {imageH} at ({imageX}, {imageY}).";
 
-            // Full canvas rectangle
             var fullRect = new RectangleGeometry(
                 new Rect(0, 0, cropCanvas.ActualWidth, cropCanvas.ActualHeight));
 
-            // Selection rectangle (still UI space for the overlay)
+            // IMPORTANT: use canvas coordinates here
             var selection = new RectangleGeometry(
-                new Rect(left, top, width, height));
+                new Rect(canvasLeft, canvasTop, width, height));
 
             var mask = new CombinedGeometry(
                 GeometryCombineMode.Exclude, fullRect, selection);
@@ -427,8 +450,10 @@ namespace FlintCapture2
         {
             if (_ssImage == null) return null;
 
-            double left = Canvas.GetLeft(selectionRect);
-            double top = Canvas.GetTop(selectionRect);
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            double left = Canvas.GetLeft(selectionRect) - imgBounds.X;
+            double top = Canvas.GetTop(selectionRect) - imgBounds.Y;
             double width = selectionRect.Width;
             double height = selectionRect.Height;
 
@@ -524,6 +549,17 @@ namespace FlintCapture2
 
                 return null;
             }
+        }
+        private Rect GetImageBoundsInCropCanvas()
+        {
+            GeneralTransform transform = imgPreview.TransformToVisual(cropCanvas);
+            Point topLeft = transform.Transform(new Point(0, 0));
+
+            return new Rect(
+                topLeft.X,
+                topLeft.Y,
+                imgPreview.ActualWidth,
+                imgPreview.ActualHeight);
         }
         #endregion
     }
