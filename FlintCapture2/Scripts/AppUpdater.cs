@@ -25,7 +25,7 @@ namespace FlintCapture2.Scripts
 
             try
             {
-                string json = await client.GetStringAsync(url);
+                string json = await client.GetStringAsync(url).ConfigureAwait(false);
 
                 using JsonDocument doc = JsonDocument.Parse(json);
 

@@ -49,13 +49,14 @@ namespace FlintCapture2
 
         }
 
-        public async void DBoxFlagContinueMainWindow()
+        public void DBoxFlagContinueMainWindow()
         {
             mainWin = new(SelectedCaptureType);
             mainWin.Show();
             indicatorWin?.ShowIndicator();
-            await CheckUpdates(); // todo: look into why this makes the mouse stutter
+            _ = CheckUpdatesAsyncDeferred(); // todo: look into why this makes the mouse stutter. update: making it an awaited task is good practice but its just making a new dbox that lags it
         }
+        
 
         public AppUpdater.UpdateInfo? LastFetchedUpdateInfo;
         public async Task CheckUpdates()
@@ -68,7 +69,6 @@ namespace FlintCapture2
             {
                 if (LastFetchedUpdateInfo.AvailableUpdate == AppUpdater.UpdateInfo.UpdateStatus.NewerAvailable)
                 {
-                    await Task.Delay(3000);
                     initDbox = new(DialogBoxWindow.DialogType.UpdateAvailable);
                     initDbox.Show();
                 }
@@ -84,7 +84,17 @@ namespace FlintCapture2
                 MessageBox.Show(result, "Update stats", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+        public async Task CheckUpdatesAsyncDeferred()
+        {
+            // Let layout + first render frame finish
+            await Task.Yield();
+
+            await Task.Delay(3000);
+
+            await CheckUpdates();
+        }
     }
+
     public static class PROJCONSTANTS
     {
         public const string AssemblyName = "FlintCapture2";
