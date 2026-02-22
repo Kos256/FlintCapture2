@@ -68,6 +68,9 @@ namespace FlintCapture2
                 RebuildSelectionFromNormalized();
             };
 
+
+            imgPreview.SizeChanged += (s, e) => SyncInkToImage();
+
             RootGrid.Opacity = 0;
             imgPreview.Opacity = 0;
             Loaded += ImageEditWindow_Loaded;
@@ -77,9 +80,10 @@ namespace FlintCapture2
         {
             statusTextRun.Text = "Window loaded. Waiting for image...";
             ESP.PlaySound("editor open");
-            //annotationCanvas.Width = imgPreview.Width;
-            annotationCanvas.Visibility = Visibility.Visible;
+            //annotationInkCanvas.Width = imgPreview.Width;
+            annotationInkCanvas.Visibility = Visibility.Visible;
             cropCanvas.Visibility = Visibility.Hidden;
+            SyncInkToImage();
 
             RootGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
             {
@@ -209,7 +213,7 @@ namespace FlintCapture2
                 // leftoff: make a dedicated "cancel crop" button
                 if (((string)btn.Content).ToLower().Contains("crop"))
                 {
-                    annotationCanvas.Visibility = Visibility.Hidden;
+                    annotationInkCanvas.Visibility = Visibility.Hidden;
                     cropCanvas.Visibility = Visibility.Visible;
 
                     cropBtn.Content = "Done";
@@ -242,7 +246,7 @@ namespace FlintCapture2
                 {
                     CropImageToSelection();
 
-                    annotationCanvas.Visibility = Visibility.Visible;
+                    annotationInkCanvas.Visibility = Visibility.Visible;
                     cropCanvas.Visibility = Visibility.Hidden;
 
                     cropBtn.Content = "Crop";
@@ -276,16 +280,21 @@ namespace FlintCapture2
                 
                 try
                 {
+                    BitmapSource resultCopiedImage;
+
                     if (!regionMode) // normal crop
                     {
-                        Clipboard.SetImage(_ssEditedImage);
-                        //throw new Exception(); // test exception
+                        resultCopiedImage = AddWatermarkToImage(_ssEditedImage);
+                        //throw new Exception("Test exception");
                     }
                     else // regional crop
                     {
-                        Clipboard.SetImage(CropImageToSelection(false) ?? _ssEditedImage);
-                        //throw new Exception(); // test exception
+                        resultCopiedImage = AddWatermarkToImage(CropImageToSelection(false) ?? _ssEditedImage);
+                        //throw new Exception("Test exception");
                     }
+
+                    Clipboard.SetImage(resultCopiedImage);
+
                     copyBtn.Content = "Copied!";
                     copyBtn.Background = new SolidColorBrush(Color.FromRgb(0, 50, 0));
                     copyBtn.BorderBrush = Brushes.Lime;
@@ -306,8 +315,9 @@ namespace FlintCapture2
             if (btn.Name.Contains("save"))
             {
                 // Create encoder
+                var watermarkedImg = AddWatermarkToImage(_ssEditedImage);
                 var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(_ssEditedImage));
+                encoder.Frames.Add(BitmapFrame.Create(watermarkedImg));
 
                 string dir = PathIO.GetDirectoryName(ScreenshotFilePath) ?? ".";
                 dir = PathIO.Combine(dir, "..", "Saved Edits");
@@ -730,6 +740,75 @@ namespace FlintCapture2
 
             UpdateHandles();
             UpdateCropOverlay();
+        }
+        #endregion
+
+        #region Annotation logic
+        private void SyncInkToImage()
+        {
+            if (_ssImage == null || imgPreview.ActualWidth <= 0 || imgPreview.ActualHeight <= 0)
+                return;
+
+            // Get the image bounds relative to RootGrid or parent canvas
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            // Set InkCanvas size and position to match image
+            annotationInkCanvas.Width = imgBounds.Width;
+            annotationInkCanvas.Height = imgBounds.Height;
+
+            Canvas.SetLeft(annotationInkCanvas, imgBounds.X);
+            Canvas.SetTop(annotationInkCanvas, imgBounds.Y);
+        }
+        #endregion
+
+        #region Watermark logic
+        private BitmapSource AddWatermarkToImage(BitmapSource source, string watermarkText = "Captured with FlintCapture")
+        {
+            int width = source.PixelWidth;
+            int height = source.PixelHeight;
+
+            // Scale font relative to image width (adjust 0.025 as needed)
+            double fontSize = Math.Max(12, width * 0.025);
+
+            var fontFamily = (FontFamily)Application.Current.Resources["ExoBoldItalic"];
+            var typeface = new Typeface(fontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
+            // Use source DPI instead of MainWindow
+            double dpiX = source.DpiX > 0 ? source.DpiX : 96;
+            double dpiY = source.DpiY > 0 ? source.DpiY : 96;
+
+            var renderTarget = new RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
+
+            var dv = new DrawingVisual();
+            using (var dc = dv.RenderOpen())
+            {
+                // Draw original image
+                dc.DrawImage(source, new Rect(0, 0, width, height));
+
+                // Draw watermark
+                var formattedText = new FormattedText(
+                    watermarkText,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    FlowDirection.LeftToRight,
+                    typeface,
+                    fontSize,
+                    Brushes.White,
+                    dpiX / 96.0 // PixelsPerDip
+                );
+
+                formattedText.SetFontWeight(FontWeights.Bold);
+
+                double margin = fontSize * 0.5;
+                Point textPos = new Point(margin, height - formattedText.Height - margin);
+
+                dc.PushOpacity(0.3);
+                dc.DrawText(formattedText, textPos);
+                dc.Pop();
+            }
+
+            renderTarget.Render(dv);
+            renderTarget.Freeze();
+            return renderTarget;
         }
         #endregion
     }

@@ -24,15 +24,9 @@
         <Border x:Name="windowFocusBorder" BorderBrush="{Binding BorderBrush, ElementName=window}" BorderThickness="1" d:IsLocked="True" d:IsHidden="True"/>
         <Grid Margin="10,61,10,90" Background="#0CFFFFFF">
             <TextBlock x:Name="loadingImgText" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Loading image..." VerticalAlignment="Center" FontSize="48" Foreground="#FF00B9FF"/>
-            <Image x:Name="imgPreview" HorizontalAlignment="Center"/>
-            <InkCanvas x:Name="annotationCanvas" Background="{x:Null}" Visibility="Hidden">
-                <InkCanvas.DefaultDrawingAttributes>
-                    <DrawingAttributes Color="Red"
-                       Width="4"
-                       Height="4"
-                       FitToCurve="True"/>
-                </InkCanvas.DefaultDrawingAttributes>
-            </InkCanvas>
+            
+            <Image x:Name="imgPreview"/>
+            
             <Canvas x:Name="cropCanvas">
                 <Path x:Name="cropOverlayPath" Fill="#7F000000" Stretch="None"/>
                 <Border x:Name="cropSelectionRect"
@@ -97,6 +91,17 @@
        Background="White"
        BorderBrush="Black"
        BorderThickness="1" Canvas.Left="200" Canvas.Top="200" Opacity="0" Cursor="SizeNWSE"/>
+            </Canvas>
+            <Canvas x:Name="annotationCanvas">
+
+                <InkCanvas x:Name="annotationInkCanvas" Visibility="Hidden" Background="{x:Null}">
+                    <InkCanvas.DefaultDrawingAttributes>
+                        <DrawingAttributes Color="Red"
+                       Width="4"
+                       Height="4"
+                       FitToCurve="True"/>
+                    </InkCanvas.DefaultDrawingAttributes>
+                </InkCanvas>
             </Canvas>
         </Grid>
         <Button x:Name="copyBtn" Content="Copy image" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,80,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
