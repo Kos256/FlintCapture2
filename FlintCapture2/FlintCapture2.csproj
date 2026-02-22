@@ -6,25 +6,29 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup>
 	<Version>2.0.3</Version>
   </PropertyGroup>
 
   <!-- Release-Specific (Contained) Settings -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-	<PublishSingleFile>true</PublishSingleFile>
-	<SelfContained>true</SelfContained>
-	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-	<EnableWindowsTargeting>true</EnableWindowsTargeting>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<PublishTrimmed>false</PublishTrimmed>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	<DebugType>embedded</DebugType>
-	<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="assets\sounds\app close.wav" />
     <None Remove="assets\sounds\app open.wav" />
+    <None Remove="assets\sounds\dbox in alt.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +41,7 @@
     <EmbeddedResource Include="assets\sounds\crop end clamp.wav" />
     <EmbeddedResource Include="assets\sounds\crop end.wav" />
     <EmbeddedResource Include="assets\sounds\crop start.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox in alt.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in.wav" />
     <EmbeddedResource Include="assets\sounds\dbox out.wav" />
   </ItemGroup>

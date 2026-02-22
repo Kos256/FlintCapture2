@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -21,12 +22,13 @@ namespace FlintCapture2
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
         public IndicatorWindow? indicatorWin;
+        public AppUpdater? appUpdater;
         public ScreenshotHandler.HandlerType SelectedCaptureType;
         public bool WasSnippingToolEnabledBefore = false;
         protected override void OnStartup(StartupEventArgs e)
         {
             SelectedCaptureType = ScreenshotHandler.HandlerType.SelfCapture;
-
+            appUpdater = new();
             indicatorWin = new();
 
             if (HelperMethods.PrtScBindedToSnippingTool())
@@ -39,6 +41,7 @@ namespace FlintCapture2
             {
                 DBoxFlagContinueMainWindow();
             }
+
         }
         protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
         {
@@ -51,6 +54,35 @@ namespace FlintCapture2
             mainWin = new(SelectedCaptureType);
             mainWin.Show();
             indicatorWin?.ShowIndicator();
+            CheckUpdates();
+        }
+
+        public AppUpdater.UpdateInfo? LastFetchedUpdateInfo;
+        public async void CheckUpdates()
+        {
+            LastFetchedUpdateInfo = await appUpdater!.IsUpdateAvailable();
+
+            bool actualOutput = true;
+
+            if (actualOutput)
+            {
+                if (LastFetchedUpdateInfo.AvailableUpdate == AppUpdater.UpdateInfo.UpdateStatus.NewerAvailable)
+                {
+                    await Task.Delay(3000);
+                    initDbox = new(DialogBoxWindow.DialogType.UpdateAvailable);
+                    initDbox.Show();
+                }
+            }
+            else
+            {
+                string result = "";
+                result += $"Update available? {LastFetchedUpdateInfo.AvailableUpdate}";
+                result += $"\nVersion: {LastFetchedUpdateInfo.Version}";
+                if (LastFetchedUpdateInfo.Failed != null) result += $"Failed: {LastFetchedUpdateInfo.Failed}";
+
+                Debug.WriteLine("-- Update stats --\n" + result + "\n------------------");
+                MessageBox.Show(result, "Update stats", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
     public static class PROJCONSTANTS

@@ -26,10 +26,12 @@ namespace FlintCapture2
         public enum DialogType
         {
             Unknown = 0,
-            SnippingToolEnabledWarning = 1,     // snipping tool error v2 (attempts to change setting on its own)
-            SnippingToolEnabledError = 2,       // snipping tool error v1 (tells the user to change setting)
-            SnippingToolEnabled = 3,            // snipping tool error v3 (v2 but custom dbox)
-            SnippingToolTempDisabledDisclaimer = 4 // RegisterHotkey has disabled snipping tool on PrtSc until the app closes
+            SnippingToolEnabledWarning = 1,         // snipping tool error v2 (attempts to change setting on its own)
+            SnippingToolEnabledError = 2,           // snipping tool error v1 (tells the user to change setting)
+            SnippingToolEnabled = 3,                // snipping tool error v3 (v2 but custom dbox)
+            SnippingToolTempDisabledDisclaimer = 4, // RegisterHotkey has disabled snipping tool on PrtSc until the app closes
+            UpdateAvailable = 5,
+            UpdateConfirm = 6,
         };
         public DialogType dboxType;
         public DialogBoxWindow(DialogType dboxType)
@@ -118,21 +120,61 @@ namespace FlintCapture2
                     DialogBoxIntro();
                     break;
 
+                case DialogType.UpdateAvailable:
+                    bodyMsg.Text = "";
+                    bodyMsg.Inlines.Add(new Italic(new Run("Pssssssst... ") { FontFamily = (FontFamily)App.Current.Resources["ExoItalic"] }));
+                    bodyMsg.Inlines.Add(new Run("there is a newer version of FlintCapture available!"));
+                    bodyMsg.Inlines.Add(new LineBreak());
+                    bodyMsg.Inlines.Add(new LineBreak());
+                    bodyMsg.Inlines.Add(new Run("You currently have: "));
+                    bodyMsg.Inlines.Add(new Run($"v{PROJCONSTANTS.AppVersion.ToString()}") { Foreground = Brushes.Orange, FontFamily = (FontFamily)App.Current.Resources["ExoItalic"] });
+                    bodyMsg.Inlines.Add(new Run("\nYou can install: "));
+                    bodyMsg.Inlines.Add(new Run($"v{((App)Application.Current).LastFetchedUpdateInfo?.Version}") { Foreground = Brushes.Lime, FontFamily = (FontFamily)App.Current.Resources["ExoItalic"] });
+
+                    string tooltip = "";
+                    int tooltipSelector = Random.Shared.Next() % 2;
+                    switch (tooltipSelector)
+                    {
+                        case 0:
+                            tooltip = "Dismiss for now";
+                            break;
+
+                        case 1:
+                            tooltip = "GRRR DON'T BOTHER ME I AM HAPPY WITH MY CURRENT VERSION GO AWAYYYY";
+                            break;
+                    }
+                    closeBtn.ToolTip = tooltip;
+
+                    closeBtn.Click += dboxDismiss_Generic;
+                    //dboxBtnPrimary.Click += dboxPrimary_SnippingTool; // todo: add updater logic later
+                    dboxBtnSecondary.Click += dboxDismiss_Generic;
+                    dboxBtnSecondary.Visibility = Visibility.Visible;
+
+                    ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Sure!") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")), FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+                    ((TextBlock)dboxBtnSecondary.Content).Inlines.Add(new Run("Meh I'll pass..."));
+
+                    DialogBoxIntro("dbox in alt");
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dboxType));
             }
         }
 
-        private async void DialogBoxIntro()
+        private async void DialogBoxIntro(string overrideSound = "")
         {
-            ESP.PlaySound("dbox in");
+            ESP.PlaySound((overrideSound == "") ? "dbox in" : overrideSound);
 
             bodyMsg.Opacity = 0;
             dboxIcon.Opacity = 0;
             RootGrid.Opacity = 0;
             btnContainerGrid.Opacity = 0;
+            closeBtn.Opacity = 0;
 
             await Task.Delay(50); // a little delay to match up visuals with the SFX
+
+            double savedRootGridHeight = RootGrid.ActualHeight;
+            RootGrid.Height = savedRootGridHeight;
 
             RootGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
             {
@@ -164,12 +206,16 @@ namespace FlintCapture2
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
             };
 
-            await Task.Delay(200);
+            await Task.Delay(100);
             dboxIcon.BeginAnimation(OpacityProperty, elemFadeIn);
-            await Task.Delay(300);
+            await Task.Delay(100);
             bodyMsg.BeginAnimation(OpacityProperty, elemFadeIn);
-            await Task.Delay(300);
+            await Task.Delay(100);
             btnContainerGrid.BeginAnimation(OpacityProperty, elemFadeIn);
+            await Task.Delay(100);
+            closeBtn.BeginAnimation(OpacityProperty, elemFadeIn);
+
+            RootGrid.Height = double.NaN;
         }
 
         SoundInstance? dboxOutroSoundInstance;
@@ -182,13 +228,16 @@ namespace FlintCapture2
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseInOut },
             };
 
-            closeBtn.IsEnabled = false;
-            dboxBtnPrimary.IsEnabled = false;
-            dboxBtnSecondary.IsEnabled = false;
+            //closeBtn.IsEnabled = false;
+            //dboxBtnPrimary.IsEnabled = false;
+            //dboxBtnSecondary.IsEnabled = false;
+            foreach (Button b in btnContainerGrid.Children) b.IsEnabled = false;
 
             dboxOutroSoundInstance = ESP.PlayTracked("dbox out");
 
             //await Task.Delay(50); // a little delay to match up visuals with the SFX
+
+            double savedRootGridHeight = RootGrid.ActualHeight;
 
             bodyMsg.BeginAnimation(OpacityProperty, fadeOutHalfSec);
             dboxIcon.BeginAnimation(OpacityProperty, fadeOutHalfSec);
@@ -199,6 +248,11 @@ namespace FlintCapture2
                 Duration = TimeSpan.FromSeconds(0.5),
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseIn },
             });
+
+            await Task.Delay(1000);
+            Close();
+
+            RootGrid.Height = savedRootGridHeight;
         }
 
         private void LegacyWarnSnippingTool(bool allowChangeSettingOption = true)
@@ -338,11 +392,15 @@ namespace FlintCapture2
 
             App.Current.Shutdown();
         }
-        private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)
+        private async void dboxDismiss_GenericContinueFlags(object sender, RoutedEventArgs e)
         {
             DialogBoxOutro();
             await Task.Delay(1000);
             ((App)Application.Current).DBoxFlagContinueMainWindow();
+        }
+        private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)
+        {
+            DialogBoxOutro();
         }
 
         private async void dboxPrimary_SnippingTool(object sender, RoutedEventArgs e)
