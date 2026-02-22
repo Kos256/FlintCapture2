@@ -49,16 +49,16 @@ namespace FlintCapture2
 
         }
 
-        public void DBoxFlagContinueMainWindow()
+        public async void DBoxFlagContinueMainWindow()
         {
             mainWin = new(SelectedCaptureType);
             mainWin.Show();
             indicatorWin?.ShowIndicator();
-            CheckUpdates();
+            await CheckUpdates(); // todo: look into why this makes the mouse stutter
         }
 
         public AppUpdater.UpdateInfo? LastFetchedUpdateInfo;
-        public async void CheckUpdates()
+        public async Task CheckUpdates()
         {
             LastFetchedUpdateInfo = await appUpdater!.IsUpdateAvailable();
 

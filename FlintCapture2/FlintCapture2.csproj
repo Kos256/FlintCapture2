@@ -26,12 +26,14 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\icons\app update.svg" />
     <None Remove="assets\sounds\app close.wav" />
     <None Remove="assets\sounds\app open.wav" />
     <None Remove="assets\sounds\dbox in alt.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="assets\icons\app update.svg" />
     <Resource Include="assets\icons\snipping tool reject.svg" />
     <Resource Include="assets\icons\warn.svg" />
     <Resource Include="assets\icons\window controls\close white.svg" />
