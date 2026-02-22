@@ -54,73 +54,18 @@ namespace FlintCapture2
             cropBoundsFillBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7F000000"));
             cropOverlayPath.Fill = cropBoundsFillBrush;
 
-            const double MIN_CROPSIZE = 10;
+            cropSelectionGrid.Opacity = 0;
+            cropSelectionGrid.MouseEnter += CropSelectionGrid_MouseEvent;
+            cropSelectionGrid.MouseLeave += CropSelectionGrid_MouseEvent;
+            cropSelectionGrid.MouseLeftButtonDown += CropSelectionGrid_MouseEvent;
+            cropSelectionGrid.MouseLeftButtonUp += CropSelectionGrid_MouseEvent;
+            cropSelectionGrid.MouseMove += CropSelectionGrid_MouseEvent;
 
-            tlHandle.DragDelta += (s, e) =>
+            tlHandle.DragDelta += TlHandle_DragDelta;
+            brHandle.DragDelta += BrHandle_DragDelta;
+            SizeChanged += (s, e) =>
             {
-                Rect imgBounds = GetImageBoundsInCropCanvas();
-
-                double left = Canvas.GetLeft(selectionRect);
-                double top = Canvas.GetTop(selectionRect);
-
-                double right = left + selectionRect.Width;
-                double bottom = top + selectionRect.Height;
-
-                double newLeft = left + e.HorizontalChange;
-                double newTop = top + e.VerticalChange;
-
-                // Clamp to image bounds
-                if (newLeft < imgBounds.Left)
-                    newLeft = imgBounds.Left;
-
-                if (newTop < imgBounds.Top)
-                    newTop = imgBounds.Top;
-
-                // Prevent crossing fixed bottom-right
-                if (right - newLeft < MIN_CROPSIZE)
-                    newLeft = right - MIN_CROPSIZE;
-
-                if (bottom - newTop < MIN_CROPSIZE)
-                    newTop = bottom - MIN_CROPSIZE;
-
-                selectionRect.Width = right - newLeft;
-                selectionRect.Height = bottom - newTop;
-
-                Canvas.SetLeft(selectionRect, newLeft);
-                Canvas.SetTop(selectionRect, newTop);
-
-                UpdateHandles();
-                UpdateCropOverlay();
-            };
-            brHandle.DragDelta += (s, e) =>
-            {
-                Rect imgBounds = GetImageBoundsInCropCanvas();
-
-                double left = Canvas.GetLeft(selectionRect);
-                double top = Canvas.GetTop(selectionRect);
-
-                // Current mouse-adjusted bottom-right position
-                double newRight = left + selectionRect.Width + e.HorizontalChange;
-                double newBottom = top + selectionRect.Height + e.VerticalChange;
-
-                // Clamp to image bounds
-                if (newRight > imgBounds.Right)
-                    newRight = imgBounds.Right;
-
-                if (newBottom > imgBounds.Bottom)
-                    newBottom = imgBounds.Bottom;
-
-                double newWidth = newRight - left;
-                double newHeight = newBottom - top;
-
-                if (newWidth < MIN_CROPSIZE) newWidth = MIN_CROPSIZE;
-                if (newHeight < MIN_CROPSIZE) newHeight = MIN_CROPSIZE;
-
-                selectionRect.Width = newWidth;
-                selectionRect.Height = newHeight;
-
-                UpdateHandles();
-                UpdateCropOverlay();
+                RebuildSelectionFromNormalized();
             };
 
             RootGrid.Opacity = 0;
@@ -381,14 +326,222 @@ namespace FlintCapture2
                 RequestClose();
             }
         }
+
         #region Cropping logic
+
+        const double MIN_CROPSIZE = 10;
+        private Rect _normalizedCropRect = new Rect(0.1, 0.1, 0.5, 0.5);
+
+        private void TlHandle_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            double left = Canvas.GetLeft(cropSelectionRect);
+            double top = Canvas.GetTop(cropSelectionRect);
+
+            double right = left + cropSelectionRect.Width;
+            double bottom = top + cropSelectionRect.Height;
+
+            double newLeft = left + e.HorizontalChange;
+            double newTop = top + e.VerticalChange;
+
+            // Clamp to image bounds
+            if (newLeft < imgBounds.Left)
+                newLeft = imgBounds.Left;
+
+            if (newTop < imgBounds.Top)
+                newTop = imgBounds.Top;
+
+            // Prevent crossing fixed bottom-right
+            if (right - newLeft < MIN_CROPSIZE)
+                newLeft = right - MIN_CROPSIZE;
+
+            if (bottom - newTop < MIN_CROPSIZE)
+                newTop = bottom - MIN_CROPSIZE;
+
+            cropSelectionRect.Width = right - newLeft;
+            cropSelectionRect.Height = bottom - newTop;
+
+            Canvas.SetLeft(cropSelectionRect, newLeft);
+            Canvas.SetTop(cropSelectionRect, newTop);
+
+            // normalizing bounds
+            double canvasLeft = Canvas.GetLeft(cropSelectionRect);
+            double canvasTop = Canvas.GetTop(cropSelectionRect);
+
+            double relativeLeft = canvasLeft - imgBounds.X;
+            double relativeTop = canvasTop - imgBounds.Y;
+
+            _normalizedCropRect = new Rect(
+                relativeLeft / imgBounds.Width,
+                relativeTop / imgBounds.Height,
+                cropSelectionRect.Width / imgBounds.Width,
+                cropSelectionRect.Height / imgBounds.Height);
+            // ------------------
+
+            UpdateHandles();
+            UpdateCropOverlay();
+        }
+        private void BrHandle_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            double left = Canvas.GetLeft(cropSelectionRect);
+            double top = Canvas.GetTop(cropSelectionRect);
+
+            // Current mouse-adjusted bottom-right position
+            double newRight = left + cropSelectionRect.Width + e.HorizontalChange;
+            double newBottom = top + cropSelectionRect.Height + e.VerticalChange;
+
+            // Clamp to image bounds
+            if (newRight > imgBounds.Right)
+                newRight = imgBounds.Right;
+
+            if (newBottom > imgBounds.Bottom)
+                newBottom = imgBounds.Bottom;
+
+            double newWidth = newRight - left;
+            double newHeight = newBottom - top;
+
+            if (newWidth < MIN_CROPSIZE) newWidth = MIN_CROPSIZE;
+            if (newHeight < MIN_CROPSIZE) newHeight = MIN_CROPSIZE;
+
+            cropSelectionRect.Width = newWidth;
+            cropSelectionRect.Height = newHeight;
+
+            // normalizing bounds
+            double canvasLeft = Canvas.GetLeft(cropSelectionRect);
+            double canvasTop = Canvas.GetTop(cropSelectionRect);
+
+            double relativeLeft = canvasLeft - imgBounds.X;
+            double relativeTop = canvasTop - imgBounds.Y;
+
+            _normalizedCropRect = new Rect(
+                relativeLeft / imgBounds.Width,
+                relativeTop / imgBounds.Height,
+                cropSelectionRect.Width / imgBounds.Width,
+                cropSelectionRect.Height / imgBounds.Height);
+            // ------------------
+
+            UpdateHandles();
+            UpdateCropOverlay();
+        }
+
+        private bool draggingCropSelectionGrid = false;
+        private Point draggingLastPos = new(0, 0);
+        private void CropSelectionGrid_MouseEvent(object sender, MouseEventArgs e)
+        {
+            Grid grid = (Grid)sender;
+
+            if (e.RoutedEvent == UIElement.MouseEnterEvent)
+            {
+                cropSelectionGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
+                {
+                    To = 1,
+                    Duration = TimeSpan.FromSeconds(0.1),
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                });
+            }
+
+            else if (e.RoutedEvent == UIElement.MouseLeaveEvent)
+            {
+                cropSelectionGrid.BeginAnimation(OpacityProperty, new DoubleAnimation
+                {
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(0.1),
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                });
+            }
+
+            else if (e.RoutedEvent == UIElement.MouseLeftButtonDownEvent)
+            {
+                draggingCropSelectionGrid = true;
+
+                var mouseArgs = (MouseButtonEventArgs)e;
+                draggingLastPos = mouseArgs.GetPosition(cropCanvas);
+
+                cropSelectionGrid.CaptureMouse();
+
+                //ESP.PlaySound("crop drag start");
+            }
+
+            else if (e.RoutedEvent == UIElement.MouseLeftButtonUpEvent)
+            {
+                draggingCropSelectionGrid = false;
+
+                cropSelectionGrid.ReleaseMouseCapture();
+
+                //ESP.PlaySound("crop drag stop");
+            }
+
+            else if (e.RoutedEvent == UIElement.MouseMoveEvent)
+            {
+                if (!draggingCropSelectionGrid) return;
+
+                var mouseArgs = (MouseEventArgs)e;
+                Point currentPosition = mouseArgs.GetPosition(cropCanvas);
+
+                double deltaX = currentPosition.X - draggingLastPos.X;
+                double deltaY = currentPosition.Y - draggingLastPos.Y;
+
+                Rect imgBounds = GetImageBoundsInCropCanvas();
+
+                double left = Canvas.GetLeft(cropSelectionRect);
+                double top = Canvas.GetTop(cropSelectionRect);
+
+                double width = cropSelectionRect.Width;
+                double height = cropSelectionRect.Height;
+
+                double newLeft = left + deltaX;
+                double newTop = top + deltaY;
+
+                // Clamp LEFT and RIGHT inside image
+                if (newLeft < imgBounds.Left)
+                    newLeft = imgBounds.Left;
+
+                if (newLeft + width > imgBounds.Right)
+                    newLeft = imgBounds.Right - width;
+
+                // Clamp TOP and BOTTOM inside image
+                if (newTop < imgBounds.Top)
+                    newTop = imgBounds.Top;
+
+                if (newTop + height > imgBounds.Bottom)
+                    newTop = imgBounds.Bottom - height;
+
+                Canvas.SetLeft(cropSelectionRect, newLeft);
+                Canvas.SetTop(cropSelectionRect, newTop);
+
+                draggingLastPos = currentPosition;
+
+                // ---- Normalize just like your handles ----
+
+                double relativeLeft = newLeft - imgBounds.X;
+                double relativeTop = newTop - imgBounds.Y;
+
+                _normalizedCropRect = new Rect(
+                    relativeLeft / imgBounds.Width,
+                    relativeTop / imgBounds.Height,
+                    width / imgBounds.Width,
+                    height / imgBounds.Height);
+
+                UpdateHandles();
+                UpdateCropOverlay();
+            }
+
+            else
+            {
+                MessageBox.Show($"{e.RoutedEvent.Name} was sent, and no block was there to handle it.", "Event has no handler?!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void UpdateHandles()
         {
-            double left = Canvas.GetLeft(selectionRect);
-            double top = Canvas.GetTop(selectionRect);
+            double left = Canvas.GetLeft(cropSelectionRect);
+            double top = Canvas.GetTop(cropSelectionRect);
 
-            double right = left + selectionRect.Width;
-            double bottom = top + selectionRect.Height;
+            double right = left + cropSelectionRect.Width;
+            double bottom = top + cropSelectionRect.Height;
 
             const double HANDLE_SIZE = 20;
             const double HALF = HANDLE_SIZE / 2;
@@ -414,10 +567,10 @@ namespace FlintCapture2
             Rect imgBounds = GetImageBoundsInCropCanvas();
 
             // Canvas space (for overlay drawing)
-            double canvasLeft = Canvas.GetLeft(selectionRect);
-            double canvasTop = Canvas.GetTop(selectionRect);
-            double width = selectionRect.Width;
-            double height = selectionRect.Height;
+            double canvasLeft = Canvas.GetLeft(cropSelectionRect);
+            double canvasTop = Canvas.GetTop(cropSelectionRect);
+            double width = cropSelectionRect.Width;
+            double height = cropSelectionRect.Height;
 
             // Image-relative space (for pixel math)
             double imageLeft = canvasLeft - imgBounds.X;
@@ -452,10 +605,10 @@ namespace FlintCapture2
 
             Rect imgBounds = GetImageBoundsInCropCanvas();
 
-            double left = Canvas.GetLeft(selectionRect) - imgBounds.X;
-            double top = Canvas.GetTop(selectionRect) - imgBounds.Y;
-            double width = selectionRect.Width;
-            double height = selectionRect.Height;
+            double left = Canvas.GetLeft(cropSelectionRect) - imgBounds.X;
+            double top = Canvas.GetTop(cropSelectionRect) - imgBounds.Y;
+            double width = cropSelectionRect.Width;
+            double height = cropSelectionRect.Height;
 
             double scaleX = _ssImage.PixelWidth / imgPreview.ActualWidth;
             double scaleY = _ssImage.PixelHeight / imgPreview.ActualHeight;
@@ -560,6 +713,23 @@ namespace FlintCapture2
                 topLeft.Y,
                 imgPreview.ActualWidth,
                 imgPreview.ActualHeight);
+        }
+        private void RebuildSelectionFromNormalized()
+        {
+            Rect imgBounds = GetImageBoundsInCropCanvas();
+
+            double newLeft = imgBounds.X + (_normalizedCropRect.X * imgBounds.Width);
+            double newTop = imgBounds.Y + (_normalizedCropRect.Y * imgBounds.Height);
+            double newWidth = _normalizedCropRect.Width * imgBounds.Width;
+            double newHeight = _normalizedCropRect.Height * imgBounds.Height;
+
+            Canvas.SetLeft(cropSelectionRect, newLeft);
+            Canvas.SetTop(cropSelectionRect, newTop);
+            cropSelectionRect.Width = newWidth;
+            cropSelectionRect.Height = newHeight;
+
+            UpdateHandles();
+            UpdateCropOverlay();
         }
         #endregion
     }

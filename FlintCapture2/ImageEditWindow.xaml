@@ -35,13 +35,37 @@
             </InkCanvas>
             <Canvas x:Name="cropCanvas">
                 <Path x:Name="cropOverlayPath" Fill="#7F000000" Stretch="None"/>
-                <Rectangle x:Name="selectionRect"
-           Stroke="#FF00B8FD"
-           StrokeThickness="2"
-           Width="40"
-           Height="50"
-           Canvas.Left="20"
-           Canvas.Top="10"/>
+                <Border x:Name="cropSelectionRect"
+           BorderBrush="#FF00B8FD"
+           Width="100"
+           Height="100"
+           Canvas.Left="110"
+           Canvas.Top="110" BorderThickness="2,2,2,2">
+                    <Grid>
+                        <Grid x:Name="cropSelectionGrid" Background="#1600B7FF" Cursor="SizeAll" d:IsLocked="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="1"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="1"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Column="1" Grid.RowSpan="5" Fill="#7F00B7FF"/>
+                            <Rectangle Grid.Column="3" Grid.RowSpan="5" Fill="#7F00B7FF"/>
+                            <Rectangle Fill="#7F00B7FF" Grid.Row="1" Grid.ColumnSpan="5"/>
+                            <Rectangle Fill="#7F00B7FF" Grid.Row="3" Grid.ColumnSpan="5"/>
+                        </Grid>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="4,4,0,0" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-5,-5,0,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="0,0,4,4" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-5,-5"/>
+                    </Grid>
+                </Border>
 
                 <!-- Top Left -->
                 <Thumb x:Name="tlHandle"
@@ -49,14 +73,14 @@
        Height="20"
        Background="White"
        BorderBrush="Black"
-       BorderThickness="1" Canvas.Left="10"/>
+       BorderThickness="1" Canvas.Left="100" Canvas.Top="100" Opacity="0" Cursor="SizeNWSE"/>
 
                 <!-- Top Right -->
                 <Thumb x:Name="trHandle"
        Width="20"
        Height="20"
        BorderBrush="Black"
-       BorderThickness="1" Canvas.Left="50" Opacity="0.1"/>
+       BorderThickness="1" Canvas.Left="200" Opacity="0" Canvas.Top="100"/>
 
                 <!-- Bottom Left -->
                 <Thumb x:Name="blHandle"
@@ -64,7 +88,7 @@
        Height="20"
        Background="White"
        BorderBrush="Black"
-       BorderThickness="1" Canvas.Left="10" Canvas.Top="50" Opacity="0.1"/>
+       BorderThickness="1" Canvas.Left="100" Canvas.Top="200" Opacity="0"/>
 
                 <!-- Bottom Right -->
                 <Thumb x:Name="brHandle"
@@ -72,7 +96,7 @@
        Height="20"
        Background="White"
        BorderBrush="Black"
-       BorderThickness="1" Canvas.Left="50" Canvas.Top="50"/>
+       BorderThickness="1" Canvas.Left="200" Canvas.Top="200" Opacity="0" Cursor="SizeNWSE"/>
             </Canvas>
         </Grid>
         <Button x:Name="copyBtn" Content="Copy image" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,80,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
