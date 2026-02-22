@@ -50,6 +50,9 @@ namespace FlintCapture2
             tooltip.Inlines.Add(new Run("."));
             closeBtn.ToolTip = tooltip;
 
+            dboxBorderBrush = (SolidColorBrush)dboxBorder.BorderBrush.Clone();
+            dboxBorder.BorderBrush = dboxBorderBrush;
+
             Activated += (s, e) =>
             {
                 dboxBorder.BorderBrush.Opacity = 1;
@@ -61,7 +64,40 @@ namespace FlintCapture2
                 dboxTitle.FontFamily = (FontFamily)App.Current.Resources["ExoRegular"];
             };
 
+            Closing += DialogBoxWindow_Closing;
+
             Loaded += DialogBoxWindow_Loaded;
+        }
+
+        public bool _intentionallyClosed = false;
+        private int closeNudgeCount = 0;
+        private SolidColorBrush dboxBorderBrush;
+        private void DialogBoxWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_intentionallyClosed)
+            {
+                e.Cancel = true;
+                closeNudgeCount++;
+                ESP.PlaySound((closeNudgeCount < 30) ? "dbox no alt" : "dbox no");
+                RootGrid.BeginAnimation(MarginProperty, new ThicknessAnimation
+                {
+                    From = new(100, 0, 0, 0),
+                    To = new(0),
+                    Duration = TimeSpan.FromSeconds(2),
+                    EasingFunction = new ElasticEase { Oscillations = (closeNudgeCount < 30) ? 12 : 24 }
+                });
+                dboxBorder.BeginAnimation(BorderThicknessProperty, new ThicknessAnimation
+                {
+                    From = new(1),
+                    To = new(3),
+                    Duration = TimeSpan.FromSeconds(0.25),
+                    EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseInOut },
+                    AutoReverse = true,
+                    RepeatBehavior = new(5)
+                });
+
+                if (closeNudgeCount >= 30) dboxBorderBrush.Color = Colors.Red;
+            }
         }
 
         private void DialogBoxWindow_Loaded(object sender, RoutedEventArgs e)
@@ -71,12 +107,14 @@ namespace FlintCapture2
                 case DialogType.SnippingToolEnabledWarning:
                     LegacyWarnSnippingTool(true);
                     ((App)Application.Current).DBoxFlagContinueMainWindow();
+                    _intentionallyClosed = true;
                     Close();
                     break;
 
                 case DialogType.SnippingToolEnabledError:
                     LegacyWarnSnippingTool(false);
                     ((App)Application.Current).DBoxFlagContinueMainWindow();
+                    _intentionallyClosed = true;
                     Close();
                     break;
 
@@ -131,22 +169,39 @@ namespace FlintCapture2
                     bodyMsg.Inlines.Add(new Run("\nYou can install: "));
                     bodyMsg.Inlines.Add(new Run($"v{((App)Application.Current).LastFetchedUpdateInfo?.Version}") { Foreground = Brushes.Lime, FontFamily = (FontFamily)App.Current.Resources["ExoItalic"] });
 
-                    string tooltip = "";
-                    int tooltipSelector = Random.Shared.Next() % 2;
-                    switch (tooltipSelector)
-                    {
-                        case 0:
-                            tooltip = "Dismiss for now";
-                            break;
+                    dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "app update.svg"));
 
-                        case 1:
-                            tooltip = "GRRR DON'T BOTHER ME I AM HAPPY WITH MY CURRENT VERSION GO AWAYYYY";
-                            break;
-                    }
-                    closeBtn.ToolTip = tooltip;
+                    //TextBlock tooltip = new();
+                    //closeBtn.ToolTip = tooltip;
+                    //int tooltipSelector = (Random.Shared.Next() %) + 1;
+                    //switch (tooltipSelector)
+                    //{
+                    //    case 0:
+                    //        tooltip.Text = "Dismiss for now";
+                    //        break;
+
+                    //    case 1:
+                    //        tooltip.Text = "GRRR DON'T BOTHER ME I AM HAPPY WITH MY CURRENT VERSION GO AWAYYYY";
+                    //        //RotateTransform tooltipRotate = new(0, 200, 0);
+                    //        //tooltip.RenderTransform = tooltipRotate;
+                    //        //tooltipRotate.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation
+                    //        //{
+                    //        //    From = -0.5,
+                    //        //    To = 0.5,
+                    //        //    Duration = TimeSpan.FromSeconds(0.03),
+                    //        //    AutoReverse = true,
+                    //        //    RepeatBehavior = RepeatBehavior.Forever
+                    //        //});
+                    //        break;
+                    //}
+                    closeBtn.ToolTip = ExtraUtils.PickWeightedMessage(new Dictionary<string, float>
+                    {
+                        { "Dismiss for now", 1f },
+                        { "GRRR DON'T BOTHER ME I AM HAPPY WITH MY CURRENT VERSION GO AWAYYYY", 0.2f },
+                    });
 
                     closeBtn.Click += dboxDismiss_Generic;
-                    //dboxBtnPrimary.Click += dboxPrimary_SnippingTool; // todo: add updater logic later
+                    dboxBtnPrimary.Click += dboxPrimary_Updater; // todo: add updater logic later
                     dboxBtnSecondary.Click += dboxDismiss_Generic;
                     dboxBtnSecondary.Visibility = Visibility.Visible;
 
@@ -206,6 +261,8 @@ namespace FlintCapture2
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
             };
 
+            RootGrid.Height = double.NaN;
+
             await Task.Delay(100);
             dboxIcon.BeginAnimation(OpacityProperty, elemFadeIn);
             await Task.Delay(100);
@@ -215,11 +272,10 @@ namespace FlintCapture2
             await Task.Delay(100);
             closeBtn.BeginAnimation(OpacityProperty, elemFadeIn);
 
-            RootGrid.Height = double.NaN;
         }
 
         SoundInstance? dboxOutroSoundInstance;
-        private async void DialogBoxOutro()
+        private async void DialogBoxOutro(bool closeWindowAfterAnim = true)
         {
             DoubleAnimation fadeOutHalfSec = new DoubleAnimation
             {
@@ -232,6 +288,7 @@ namespace FlintCapture2
             //dboxBtnPrimary.IsEnabled = false;
             //dboxBtnSecondary.IsEnabled = false;
             foreach (Button b in btnContainerGrid.Children) b.IsEnabled = false;
+            closeBtn.IsEnabled = false;
 
             dboxOutroSoundInstance = ESP.PlayTracked("dbox out");
 
@@ -242,6 +299,7 @@ namespace FlintCapture2
             bodyMsg.BeginAnimation(OpacityProperty, fadeOutHalfSec);
             dboxIcon.BeginAnimation(OpacityProperty, fadeOutHalfSec);
             btnContainerGrid.BeginAnimation(OpacityProperty, fadeOutHalfSec);
+            RootGrid.Height = savedRootGridHeight;
             RootGrid.BeginAnimation(WidthProperty, new DoubleAnimation
             {
                 To = 0,
@@ -249,10 +307,13 @@ namespace FlintCapture2
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseIn },
             });
 
-            await Task.Delay(1000);
-            Close();
 
-            RootGrid.Height = savedRootGridHeight;
+            await Task.Delay(1000);
+            if (closeWindowAfterAnim)
+            {
+                _intentionallyClosed = true;
+                Close();
+            }
         }
 
         private void LegacyWarnSnippingTool(bool allowChangeSettingOption = true)
@@ -339,7 +400,7 @@ namespace FlintCapture2
              * 3 = chatgpt's implementation of 2
              */
            
-            DialogBoxOutro();
+            DialogBoxOutro(false);
             
             switch (hardcodedWait)
             {
@@ -428,6 +489,20 @@ namespace FlintCapture2
             await Task.Delay(1000);
             ((App)Application.Current).DBoxFlagContinueMainWindow();
 
+        }
+
+        private async void dboxPrimary_Updater(object sender, RoutedEventArgs e)
+        {
+            // Sure! btn = yes update
+            string url = $"https://github.com/Kos256/FlintCapture2/releases/tag/FlintCapture-v{((App)Application.Current).LastFetchedUpdateInfo!.Version}";
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+
+            DialogBoxOutro();
         }
     }
 }

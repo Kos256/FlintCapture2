@@ -30,6 +30,8 @@
     <None Remove="assets\sounds\app close.wav" />
     <None Remove="assets\sounds\app open.wav" />
     <None Remove="assets\sounds\dbox in alt.wav" />
+    <None Remove="assets\sounds\dbox no alt.wav" />
+    <None Remove="assets\sounds\dbox no.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +47,8 @@
     <EmbeddedResource Include="assets\sounds\crop start.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in alt.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox no alt.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox no.wav" />
     <EmbeddedResource Include="assets\sounds\dbox out.wav" />
   </ItemGroup>
 
