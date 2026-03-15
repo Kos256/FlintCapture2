@@ -11,7 +11,7 @@
             <TextBlock x:Name="winTitle" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="Black" FontSize="14" Text="{Binding Title, ElementName=window}"/>
             <Button TabIndex="-1" x:Name="winCtrlClose" HorizontalAlignment="Right" Foreground="{x:Null}" Width="50" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Click="winCtrlClose_Click" Margin="0,0,5,0">
                 <Button.Background>
-                    <ImageBrush ImageSource="/assets/icons/window controls/close.png" Viewport="0.25,0.25,0.5,0.5"/>
+                    <ImageBrush ImageSource="/assets/icons/window controls/close.png" Viewport="0.25,0.25,0.5,0.5" Stretch="Uniform"/>
                 </Button.Background>
             </Button>
             <Button TabIndex="-1" x:Name="winCtrlMinimize" HorizontalAlignment="Right" Foreground="{x:Null}" Width="50" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Margin="0,0,60,0" Click="winCtrlMinimize_Click">
