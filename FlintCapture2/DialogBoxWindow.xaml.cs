@@ -220,6 +220,8 @@ namespace FlintCapture2
         {
             ESP.PlaySound((overrideSound == "") ? "dbox in" : overrideSound);
 
+            var savedRootGridWidth = RootGrid.Width;
+
             bodyMsg.Opacity = 0;
             dboxIcon.Opacity = 0;
             RootGrid.Opacity = 0;
@@ -241,15 +243,15 @@ namespace FlintCapture2
             RootGrid.BeginAnimation(WidthProperty, new DoubleAnimation
             {
                 From = 0,
-                To = RootGrid.Width,
+                To = savedRootGridWidth,
                 Duration = TimeSpan.FromSeconds(0.5),
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseIn },
             });
             await Task.Delay(500);
             RootGrid.BeginAnimation(WidthProperty, new DoubleAnimation
             {
-                From = RootGrid.Width + 50,
-                To = RootGrid.Width,
+                From = savedRootGridWidth + 50,
+                To = savedRootGridWidth,
                 Duration = TimeSpan.FromSeconds(1),
                 EasingFunction = new ElasticEase { Oscillations = 2 },
             });
