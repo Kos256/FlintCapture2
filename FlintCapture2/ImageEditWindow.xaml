@@ -7,8 +7,8 @@
         mc:Ignorable="d"
             Title="New Screenshot" Height="600" Width="850" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" FontSize="16" BorderBrush="#FF00B8FD" FontFamily="{DynamicResource ExoRegular}" WindowStartupLocation="CenterScreen" MinHeight="400" MinWidth="600">
     <Grid x:Name="RootGrid" Background="#FF00141C">
-        <Grid x:Name="WindowBarGrid" VerticalAlignment="Top" Height="50" Background="#FF00B8FD">
-            <TextBlock x:Name="winTitle" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="Black" FontSize="20" Text="{Binding Title, ElementName=window}"/>
+        <Grid x:Name="WindowBarGrid" VerticalAlignment="Top" Height="30" Background="#FF00B8FD">
+            <TextBlock x:Name="winTitle" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="Black" FontSize="14" Text="{Binding Title, ElementName=window}"/>
             <Button TabIndex="-1" x:Name="winCtrlClose" HorizontalAlignment="Right" Foreground="{x:Null}" Width="50" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Click="winCtrlClose_Click" Margin="0,0,5,0">
                 <Button.Background>
                     <ImageBrush ImageSource="/assets/icons/window controls/close.png" Viewport="0.25,0.25,0.5,0.5"/>
