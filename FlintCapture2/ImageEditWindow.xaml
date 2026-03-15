@@ -111,6 +111,8 @@
             <Run Text="Status:" Foreground="#FF00B8FD" FontFamily="{DynamicResource ExoBold}"/>
             <Run x:Name="statusTextRun" Text="Unknown?" Foreground="#FF99E3FF"/>
         </TextBlock>
+        <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Todo: add resize colliders around window edges" VerticalAlignment="Bottom" FontSize="9" Foreground="#FFFFD500" Margin="0,0,5,5"/>
+        <Border BorderBrush="#FFFFD500" BorderThickness="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20"/>
 
     </Grid>
 </Window>
