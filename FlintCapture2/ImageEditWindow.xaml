@@ -22,7 +22,7 @@
             <Rectangle x:Name="winbarCollider" Margin="0,0,120,0" Fill="Transparent"/>
         </Grid>
         <Border x:Name="windowFocusBorder" BorderBrush="{Binding BorderBrush, ElementName=window}" BorderThickness="1" d:IsLocked="True" d:IsHidden="True"/>
-        <Grid Margin="10,61,10,90" Background="#0CFFFFFF">
+        <Grid Margin="10,50,10,90" Background="#0CFFFFFF">
             <TextBlock x:Name="loadingImgText" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Loading image..." VerticalAlignment="Center" FontSize="48" Foreground="#FF00B9FF"/>
             
             <Image x:Name="imgPreview"/>
