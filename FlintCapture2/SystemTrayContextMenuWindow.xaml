@@ -8,11 +8,26 @@
             Title="SystemTrayContextMenuWindow" Height="150" Width="150" WindowStyle="None" AllowsTransparency="True" Foreground="Black" Background="#B2002C3F" Topmost="True" ShowInTaskbar="False" FontFamily="{DynamicResource ExoRegular}">
     <Window.Resources>
         <Style x:Key="MenuItemStyle" TargetType="Border">
+            <!--
             <EventSetter Event="MouseEnter" Handler="CtxMenuItem_MouseEnter"/>
             <EventSetter Event="MouseLeave" Handler="CtxMenuItem_MouseLeave"/>
             <EventSetter Event="MouseDown" Handler="CtxMenuItem_MouseDown"/>
+            -->
+            
+            <Setter Property="Background" Value="#7F00B2FF"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="5,5,5,0"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="MenuItemTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="5,3,0,0"/>
         </Style>
 
+        <!-- Depricated DataTemplate -->
         <DataTemplate x:Key="MenuItemTemplate">
             <Border Background="#7F00B2FF" VerticalAlignment="Bottom" Height="20" Margin="5,5,5,0" Style="{StaticResource MenuItemStyle}">
                 <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="White" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
@@ -21,16 +36,52 @@
     </Window.Resources>
 
     <Grid>
-        <ItemsControl x:Name="MenuItemsControl" 
-          ItemTemplate="{StaticResource MenuItemTemplate}">
+        <StackPanel x:Name="MenuPanel">
 
-            <!--
-            <ItemsControl.Items>
-                <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib">Item 1</sys:String>
-                <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib">Item 2</sys:String>
-            </ItemsControl.Items>
-            -->
-       
-        </ItemsControl>
+            <Border x:Name="menuBorder_OpenApp" Style="{StaticResource MenuItemStyle}">
+                <TextBlock Text="Open app" Style="{StaticResource MenuItemTextStyle}"/>
+            </Border>
+
+            <Border x:Name="menuBorder_ScreenshotHistory" Style="{StaticResource MenuItemStyle}">
+                <TextBlock Text="Screenshot history" Style="{StaticResource MenuItemTextStyle}"/>
+            </Border>
+
+            <Border x:Name="menuBorder_Exit" Style="{StaticResource MenuItemStyle}">
+                <TextBlock Text="Exit" Style="{StaticResource MenuItemTextStyle}"/>
+            </Border>
+
+
+            <Border x:Name="menuBorder_ForceExit" Style="{StaticResource MenuItemStyle}">
+
+                <Grid>
+                    <ProgressBar x:Name="forceExitBar"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="10" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Background="{x:Null}">
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF870000" Offset="1"/>
+                                <GradientStop Color="Red" Offset="0.332"/>
+                                <GradientStop Color="#FFFF6767" Offset="0"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
+
+                    <TextBlock Text="Force exit"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="5,0,0,0" FontFamily="{DynamicResource ExoBold}">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF870000" Offset="0"/>
+                                <GradientStop Color="Red" Offset="0.668"/>
+                                <GradientStop Color="#FFFF6767" Offset="1"/>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+        </StackPanel>
     </Grid>
 </Window>

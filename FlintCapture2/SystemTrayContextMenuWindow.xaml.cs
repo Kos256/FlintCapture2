@@ -1,43 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FlintCapture2
 {
-    /// <summary>
-    /// Interaction logic for SystemTrayContextMenuWindow.xaml
-    /// </summary>
     public partial class SystemTrayContextMenuWindow : Window
     {
-        public MainWindow mainWin;
-        private Dictionary<string, Action> contextMenuActions;
+        private readonly MainWindow mainWin;
+
         public SystemTrayContextMenuWindow(MainWindow mainWin)
         {
             InitializeComponent();
             this.mainWin = mainWin;
-            Hide();
-
-            contextMenuActions = new Dictionary<string, Action>
-            {
-                { "Open app", () => MIOpenApp() },
-                { "Screenshot history", () => MIHistory() },
-                { "Exit", () => MIExit() }
-            };
-            LoadMenuItems();
         }
 
+        // =========================
+        // Show menu logic
+        // =========================
         public void ShowMenu()
         {
-            Show(); // todo: confirm whether i did this right: dont use Deactivated+= to hide context menu, hook onto left click, OnLeftClick => IsActivated? If so, then do nothing. If not, then Hide()
+            Show();
             Activate();
 
             mainWin.GMouseHook.LeftMouseDown += GMouseHook_MouseDown;
@@ -45,152 +28,82 @@ namespace FlintCapture2
             mainWin.GMouseHook.RightMouseDown += GMouseHook_MouseDown;
         }
 
-        private async void GMouseHook_MouseDown(object? sender, Scripts.MouseHookEventArgs e)
+        private void GMouseHook_MouseDown(object? sender, Scripts.MouseHookEventArgs e)
         {
-            await Task.Delay(50);
-            if (!IsActive) Hide();
+            // TODO: fill in
         }
 
-        private void LoadMenuItems()
-        {
-            var items = new List<string>
-            {
-                "Open app",
-                "Screenshot history",
-                "Exit",
-                "FORCE EXIT"
-            };
-            // todo: ask chatgpt how to set top element alternation index for different margins for first item
-            // todo: ask chatgpt how to set certain elements to bottom aligned, like exit button, maybe add blue line seperator?
+        // =========================
+        // Menu Actions
+        // =========================
 
-            MenuItemsControl.ItemsSource = items;
+        private void OpenApp_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // TODO: fill in
         }
 
-        // MI<func> = Menu Item func
-        private void MIOpenApp()
+        private void ScreenshotHistory_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            //mainWin._appGuiWindow.ResetWindowOpenFlags();
-            //mainWin._appGuiWindow.RequestShowWindow();
-
-            MenuItemClicked();
-        }
-        private void MIHistory()
-        {
-            //mainWin._appGuiWindow.AddWindowOpenFlag("history");
-            //mainWin._appGuiWindow.RequestShowWindow();
-
-            MenuItemClicked();
-        }
-        private void MIExit()
-        {
-            if (mainWin != null)
-            {
-                mainWin.GMouseHook.Dispose();
-            }
-
-            //HelperMethods.PrtScBindedToSnippingTool(true); // maybe restore the last setting??
-
-            MenuItemClicked();
-            App.Current.Shutdown();
-        }
-        private void MenuItemClicked()
-        {
-            Hide();
+            // TODO: fill in
         }
 
-        private void CtxMenuItem_MouseEnter(object sender, MouseEventArgs e)
+        private void Exit_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            AnimateMenuItem(sender, "text", true);
-            AnimateMenuItem(sender, "bg", true);
-        }
-        private void CtxMenuItem_MouseLeave(object sender, MouseEventArgs e)
-        {
-            AnimateMenuItem(sender, "text", false);
-            AnimateMenuItem(sender, "bg", false);
-        }
-        private void CtxMenuItem_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (sender is Border b)
-            {
-                try
-                {
-                    contextMenuActions[((TextBlock)b.Child).Text]();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error while selection context menu option!", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+            // TODO: fill in
         }
 
-        private void AnimateMenuItem(object sender, string property, bool state)
+        private void ForceExit_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Thickness textDefaultMargin = new Thickness(5, 0, 0, 0);
-            ThicknessAnimation textHoverAnim = new ThicknessAnimation
-            {
-                From = textDefaultMargin,
-                To = new Thickness(8, 0, 0, 0),
-                Duration = TimeSpan.FromSeconds(0.5),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
-            ThicknessAnimation textHoverEndedAnim = new ThicknessAnimation
-            {
-                From = new Thickness(8, 0, 0, 0),
-                To = textDefaultMargin,
-                Duration = TimeSpan.FromSeconds(0.5),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
+            // TODO: fill in
+        }
 
-            Color bgDefaultColor = (Color)ColorConverter.ConvertFromString("#7F00B2FF");
-            ColorAnimation bgHoverAnim = new ColorAnimation
-            {
-                From = bgDefaultColor,
-                To = Color.FromArgb(0xFF, 0x00, 0xC8, 0xFF),
-                Duration = TimeSpan.FromSeconds(0.5),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
-            ColorAnimation bgHoverEndedAnim = new ColorAnimation
-            {
-                From = Color.FromArgb(0xFF, 0x00, 0xC8, 0xFF),
-                To = bgDefaultColor,
-                Duration = TimeSpan.FromSeconds(0.5),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
+        private void ForceExit_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // TODO: fill in
+        }
 
-            Color textDefaultColor = Colors.White;
-            ColorAnimation textColorHoverAnim = new ColorAnimation
-            {
-                From = textDefaultColor,
-                To = Colors.Black,
-                Duration = TimeSpan.FromSeconds(0.3),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
-            ColorAnimation textColorHoverEndedAnim = new ColorAnimation
-            {
-                From = Colors.Black,
-                To = textDefaultColor,
-                Duration = TimeSpan.FromSeconds(0.3),
-                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut }
-            };
+        // =========================
+        // Hover Animations
+        // =========================
 
-            SolidColorBrush menuItemBgBrush = new SolidColorBrush(bgDefaultColor);
-            SolidColorBrush menuItemTextBrush = new SolidColorBrush(textDefaultColor);
+        private void OpenApp_MouseEnter(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
 
-            if (sender is Border b)
-            {
-                b.Background = menuItemBgBrush;
-                (b.Child as TextBlock).Foreground = menuItemTextBrush;
+        private void OpenApp_MouseLeave(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
 
-                if (property == "bg")
-                {
-                    menuItemBgBrush.BeginAnimation(SolidColorBrush.ColorProperty, state ? bgHoverAnim : bgHoverEndedAnim);
-                    menuItemTextBrush.BeginAnimation(SolidColorBrush.ColorProperty, state ? textColorHoverAnim : textColorHoverEndedAnim);
-                }
+        private void ScreenshotHistory_MouseEnter(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
 
-                if (property == "text")
-                    (b.Child as TextBlock).BeginAnimation(TextBlock.MarginProperty, state ? textHoverAnim : textHoverEndedAnim);
-            }
+        private void ScreenshotHistory_MouseLeave(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
+
+        private void Exit_MouseEnter(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
+
+        private void Exit_MouseLeave(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
+
+        private void ForceExit_MouseEnter(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
+        }
+
+        private void ForceExit_MouseLeave(object sender, MouseEventArgs e)
+        {
+            // TODO: fill in
         }
     }
 }
