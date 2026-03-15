@@ -801,7 +801,7 @@ namespace FlintCapture2
                 double margin = fontSize * 0.5;
                 Point textPos = new Point(margin, height - formattedText.Height - margin);
 
-                dc.PushOpacity(0.3);
+                dc.PushOpacity(0.2); // watermark opacity
                 dc.DrawText(formattedText, textPos);
                 dc.Pop();
             }
