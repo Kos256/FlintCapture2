@@ -104,7 +104,7 @@
                 </InkCanvas>
             </Canvas>
         </Grid>
-        <Button x:Name="copyBtn" Content="Copy image" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,80,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
+        <Button x:Name="copyBtn" Content="Copy Image" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,80,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
         <Button x:Name="saveBtn" Content="Save" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" Margin="0,0,10,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
         <Button x:Name="cropBtn" Content="Crop" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Left" Margin="10,0,0,20" VerticalAlignment="Bottom" Click="menuBtnClicked"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="10,0,0,60">
