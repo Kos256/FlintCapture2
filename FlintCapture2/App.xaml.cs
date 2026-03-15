@@ -31,6 +31,8 @@ namespace FlintCapture2
             appUpdater = new();
             indicatorWin = new();
 
+            if (!ExtraUtils.IsAddedToStartMenu()) ExtraUtils.AddToStartMenu();
+
             if (HelperMethods.PrtScBindedToSnippingTool())
             {
                 WasSnippingToolEnabledBefore = true;
