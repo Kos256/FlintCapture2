@@ -32,3 +32,5 @@ make a timer function that snaps the screenshot after a few seconds
 allow cropping handles to be controlled by keyboard. use Q to switch between bottom right and top left corners, and use the arrow keys to control the direction of the handles by 10px and shift to make it more precise and fine (1px) and ctrl to make it coarse adjustments (100px)
 
 add open program on system startup
+
+"snipping today is broken, but with FlintCapture...blah blah blah"
