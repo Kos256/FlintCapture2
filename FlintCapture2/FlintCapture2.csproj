@@ -31,8 +31,15 @@
     <None Remove="assets\sounds\app close.wav" />
     <None Remove="assets\sounds\app open.wav" />
     <None Remove="assets\sounds\dbox in alt.wav" />
+    <None Remove="assets\sounds\dbox in empty.wav" />
     <None Remove="assets\sounds\dbox no alt.wav" />
     <None Remove="assets\sounds\dbox no.wav" />
+    <None Remove="assets\sounds\dismiss single.wav" />
+    <None Remove="assets\sounds\editor exception.wav" />
+    <None Remove="assets\sounds\ocr fail.wav" />
+    <None Remove="assets\sounds\ocr start.wav" />
+    <None Remove="assets\sounds\ocr success.wav" />
+    <None Remove="assets\sounds\screenshot disabled.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +55,7 @@
     <EmbeddedResource Include="assets\sounds\crop end.wav" />
     <EmbeddedResource Include="assets\sounds\crop start.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in alt.wav" />
+    <EmbeddedResource Include="assets\sounds\dbox in empty.wav" />
     <EmbeddedResource Include="assets\sounds\dbox in.wav" />
     <EmbeddedResource Include="assets\sounds\dbox no alt.wav" />
     <EmbeddedResource Include="assets\sounds\dbox no.wav" />
@@ -56,10 +64,16 @@
 
   <ItemGroup>
     <EmbeddedResource Include="assets\sounds\dismiss all.wav" />
+    <EmbeddedResource Include="assets\sounds\dismiss single.wav" />
     <EmbeddedResource Include="assets\sounds\dismiss.wav" />
     <EmbeddedResource Include="assets\sounds\editor close.wav" />
+    <EmbeddedResource Include="assets\sounds\editor exception.wav" />
     <EmbeddedResource Include="assets\sounds\editor open.wav" />
     <EmbeddedResource Include="assets\sounds\hover.wav" />
+    <EmbeddedResource Include="assets\sounds\ocr fail.wav" />
+    <EmbeddedResource Include="assets\sounds\ocr start.wav" />
+    <EmbeddedResource Include="assets\sounds\ocr success.wav" />
+    <EmbeddedResource Include="assets\sounds\screenshot disabled.wav" />
     <EmbeddedResource Include="assets\sounds\screenshot.wav" />
   </ItemGroup>
 
