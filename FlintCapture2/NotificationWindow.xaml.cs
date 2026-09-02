@@ -278,7 +278,7 @@ namespace FlintCapture2
             {
                 AddToStoryboard(notificationStoryboard, timerAnimation, timerRect, new PropertyPath(timerPropertyToAnimate));
                 AddToStoryboard(notificationStoryboard, notifyAnimEnter, this, new PropertyPath(Window.LeftProperty));
-                this.Show();
+                Show();
 
                 //PlaySound("Notification.Default", IntPtr.Zero, SND_ALIAS | SND_ASYNC | SND_APPLICATION);
                 ESP.PlaySound("screenshot");
