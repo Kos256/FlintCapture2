@@ -26,14 +26,14 @@ namespace FlintCapture2.Scripts
             try
             {
                 string json = await client.GetStringAsync(url).ConfigureAwait(false);
-
+                
                 using JsonDocument doc = JsonDocument.Parse(json);
 
                 string tag = doc.RootElement.GetProperty("tag_name").GetString()!;
                 string publishedAt = doc.RootElement.GetProperty("published_at").GetString()!;
 
                 // Extract version from something like:
-                // FlintCapture-v3.1.64.298 or FlintCapture-v.X.XX.XXX.XXXX blah blah blah the digit count doesn't matter I hope...
+                // FlintCapture-v3.1.64.298 or FlintCapture-vX.XX.XXX.XXXX blah blah blah the digit count doesn't matter I hope...
                 Match match = Regex.Match(tag, @"\d+(\.\d+){1,3}");
 
                 if (!match.Success)
@@ -72,6 +72,7 @@ namespace FlintCapture2.Scripts
             public UpdateStatus AvailableUpdate { get; set; }
             public Version? Version { get; set; }
             public DateTime? ReleaseDate { get; set; }
+            public string? ReleaseNotes { get; set; }
 
             public UpdateInfo(string? FailedReason = null)
             {
