@@ -179,6 +179,11 @@ namespace FlintCapture2
 
             ctxMenuWindow = SystemTray.ctxMenuWindow;
         }
+        /// <summary>
+        /// Retrieves a key's state from the global keyboard hook in the form of a boolean.
+        /// </summary>
+        /// <param name="VK">The virutal keycode to scan a keypress for</param>
+        /// <returns>True means that key is pressed down. False means that key is not pressed down.</returns>
         private bool GetKeyStateAsBool(int VK)
         {
             return ((KeyStateHelper.GetAsyncKeyState(VK) & 0x8000) != 0);
