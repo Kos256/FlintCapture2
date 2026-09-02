@@ -64,12 +64,7 @@ namespace FlintCapture2
 
             Closing += AppWantsToClose;
 
-            Loaded += (s, e) =>
-            {
-                Show();
-                Debug.WriteLine("App is running in background...");
-                Hide();
-            };
+            Loaded += MainWindow_Loaded;
 
             globalStopwatch = new();
             globalStopwatch.Start();
@@ -86,6 +81,13 @@ namespace FlintCapture2
                 SelectedCaptureType,
                 this
             );
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Show();
+            Debug.WriteLine("App is running in background...");
+            Hide();
         }
 
         public void ShowSavedScreenshotsDirectoryFileExplorer(string? path)
