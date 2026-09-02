@@ -26,12 +26,15 @@ namespace FlintCapture2
         public enum DialogType
         {
             Unknown = 0,
+            Empty = -1,
             SnippingToolEnabledWarning = 1,         // snipping tool error v2 (attempts to change setting on its own)
             SnippingToolEnabledError = 2,           // snipping tool error v1 (tells the user to change setting)
             SnippingToolEnabled = 3,                // snipping tool error v3 (v2 but custom dbox)
             SnippingToolTempDisabledDisclaimer = 4, // RegisterHotkey has disabled snipping tool on PrtSc until the app closes
             UpdateAvailable = 5,
             UpdateConfirm = 6,
+            AppFailedToStart = 7,
+            OutOfMemoryScreenshotsDisabled = 8,
         };
         public DialogType dboxType;
         public DialogBoxWindow(DialogType dboxType)
@@ -68,6 +71,7 @@ namespace FlintCapture2
 
             Loaded += DialogBoxWindow_Loaded;
         }
+        public Exception? Argument0_Ex_AppFailedToStart { get; set; }
 
         public bool _intentionallyClosed = false;
         private int closeNudgeCount = 0;
@@ -104,6 +108,34 @@ namespace FlintCapture2
         {
             switch (dboxType)
             {
+                case DialogType.AppFailedToStart:
+                    
+                    bodyMsg.Text = "";
+                    bodyMsg.Inlines.Add(new Run("Something bad happened. °-°") { Foreground = Brushes.Red, FontFamily = (FontFamily)App.Current.Resources["ExoBold"] });
+                    bodyMsg.Inlines.Add(new Run("\nFlintCapture didn't manage to start up. Here's details about the exception:"));
+                    bodyMsg.Inlines.Add(new LineBreak());
+                    bodyMsg.Inlines.Add(new Run(Argument0_Ex_AppFailedToStart?.Message) { Foreground = Brushes.Orange, FontSize = 12, FontFamily = new("Consolas") });
+                    if (Argument0_Ex_AppFailedToStart?.InnerException != null)
+                    {
+                        bodyMsg.Inlines.Add(new LineBreak());
+                        bodyMsg.Inlines.Add(new Run("Inner exception details:"));   
+                        bodyMsg.Inlines.Add(new LineBreak());
+                        bodyMsg.Inlines.Add(new Run(Argument0_Ex_AppFailedToStart?.InnerException.Message) { Foreground = Brushes.Orange, FontSize = 12, FontFamily = new("Consolas") });
+                    }
+
+                    // make a "app failed to open" icon
+                    //dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "app open failure.svg"));
+
+                    closeBtn.Click += dboxClose_Generic;
+                    dboxBtnPrimary.Click += dboxClose_Generic;
+                    dboxBtnSecondary.Click += dboxSecondary_AppFailedToStart;
+                    dboxBtnSecondary.Visibility = Visibility.Visible;
+
+                    ((TextBlock)dboxBtnPrimary.Content).Inlines.Add(new Run("Close"));
+                    ((TextBlock)dboxBtnSecondary.Content).Inlines.Add(new Run("Copy and close"));
+
+                    DialogBoxIntro();
+                    break;
                 case DialogType.SnippingToolEnabledWarning:
                     LegacyWarnSnippingTool(true);
                     ((App)Application.Current).DBoxFlagContinueMainWindow();
@@ -144,7 +176,7 @@ namespace FlintCapture2
                     bodyMsg.Inlines.Add(new Run("Pressing PrtSc will NOT open snipping tool and will instead take a screenshot with FlintCapture. \nDue to your current user settings in FlintCapture, "));
                     bodyMsg.Inlines.Add(new Run("this behavior is temporary. ") { Foreground = Brushes.Orange });
                     //bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, it's back to normal.") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
-                    bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, you may turn it back on if you wish :)") { Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF00B0FF")) });
+                    bodyMsg.Inlines.Add(new Run("Once FlintCapture closes, you may turn it back on if you wish :)") { Foreground = new SolidColorBrush(HelperMethods.HexColor("#FF00B0FF").Result) });
 
                     dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
                     
@@ -211,6 +243,23 @@ namespace FlintCapture2
                     DialogBoxIntro("dbox in alt");
                     break;
 
+                case DialogType.Empty:
+                    
+                    bodyMsg.Text = "uninitialized?";
+                    
+                    //dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "snipping tool reject.svg"));
+                    dboxIcon.Visibility = Visibility.Hidden;
+
+                    //closeBtn.Click += dboxDismiss_Generic;
+                    //closeBtn.Click += dboxDismiss_RefeedEmpty;
+                    dboxBtnPrimary.Content = "       ";
+                    dboxBtnPrimary.ToolTip = "NaN";
+
+                    closeBtn.ToolTip = "          ";
+
+                    DialogBoxIntro("dbox in empty");
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dboxType));
             }
@@ -243,7 +292,7 @@ namespace FlintCapture2
             RootGrid.BeginAnimation(WidthProperty, new DoubleAnimation
             {
                 From = 0,
-                To = savedRootGridWidth,
+                To = savedRootGridWidth + 50,
                 Duration = TimeSpan.FromSeconds(0.5),
                 EasingFunction = new QuinticEase { EasingMode = EasingMode.EaseIn },
             });
@@ -399,7 +448,7 @@ namespace FlintCapture2
              * 0 = close after 4.0s no matter what
              * 1 = wait for the sound to end, then close
              * 2 = wait for the sound to end, but if it takes longer than 10s, force close
-             * 3 = chatgpt's implementation of 2
+             * 3 = chatgpt's implementation of case #2
              */
            
             DialogBoxOutro(false);
@@ -453,6 +502,7 @@ namespace FlintCapture2
                     break;
             }
 
+            _intentionallyClosed = true;
             App.Current.Shutdown();
         }
         private async void dboxDismiss_GenericContinueFlags(object sender, RoutedEventArgs e)
@@ -464,6 +514,13 @@ namespace FlintCapture2
         private async void dboxDismiss_Generic(object sender, RoutedEventArgs e)
         {
             DialogBoxOutro();
+        }
+        private async void dboxDismiss_RefeedEmpty(object sender, RoutedEventArgs e) // don't use this, i was bored and made this for literally no reason
+        {
+            DialogBoxOutro();
+            var dbox = new DialogBoxWindow(DialogType.Empty);
+            await Task.Delay(500);
+            dbox.Show();
         }
 
         private async void dboxPrimary_SnippingTool(object sender, RoutedEventArgs e)
@@ -490,6 +547,78 @@ namespace FlintCapture2
             DialogBoxOutro();
             await Task.Delay(1000);
             ((App)Application.Current).DBoxFlagContinueMainWindow();
+
+        }
+        private async void dboxSecondary_AppFailedToStart(object sender, RoutedEventArgs e)
+        {
+            // hardcodedWait - false: depends on sound to fully end first. true: 4.0s no matter what, and is more reliable (sometimes sound driver may not be enabled and we dont want to create a depend)
+
+            DBoxCloseStrategy hardcodedWait = DBoxCloseStrategy.WaitForSoundWithTimeout;
+            /*
+             * 0 = close after 4.0s no matter what
+             * 1 = wait for the sound to end, then close
+             * 2 = wait for the sound to end, but if it takes longer than 10s, force close
+             * 3 = chatgpt's implementation of case #2
+             */
+
+            string errBody = $"There was an exception while starting FlintCapture:";
+            errBody += $"\n{Argument0_Ex_AppFailedToStart?.Message}";
+            if (Argument0_Ex_AppFailedToStart?.InnerException != null) errBody += $"\n\nInner exception details:\n{Argument0_Ex_AppFailedToStart.InnerException.Message}";
+
+            Clipboard.SetText(errBody); // copy the error message to clipboard
+
+            DialogBoxOutro(false);
+
+            switch (hardcodedWait)
+            {
+                case (DBoxCloseStrategy.FixedDelay):
+                    await Task.Delay(4000);
+                    break;
+
+                case (DBoxCloseStrategy.WaitForSound):
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                            await Task.Delay(500); // prevent freezing, loop runs in 0.5s interval
+                    }
+                    break;
+
+                case (DBoxCloseStrategy.WaitForSoundWithTimeout):
+                    Stopwatch timer = new();
+                    timer.Start();
+
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                        {
+                            await Task.Delay(500); // prevent freezing, loop runs in 0.5s interval
+                            if (timer.Elapsed > TimeSpan.FromSeconds(10)) break;
+                        }
+                    }
+                    break;
+
+                case (DBoxCloseStrategy.ChatGPT):
+                    if (dboxOutroSoundInstance != null)
+                    {
+                        var timeout = hardcodedWait == DBoxCloseStrategy.WaitForSoundWithTimeout
+                            ? TimeSpan.FromSeconds(10)
+                            : Timeout.InfiniteTimeSpan;
+
+                        var start = DateTime.UtcNow;
+
+                        while (dboxOutroSoundInstance.Position < dboxOutroSoundInstance.Duration)
+                        {
+                            if (timeout != Timeout.InfiniteTimeSpan &&
+                                DateTime.UtcNow - start > timeout)
+                                break;
+
+                            await Task.Delay(200);
+                        }
+                    }
+                    break;
+            }
+
+            App.Current.Shutdown();
 
         }
 
