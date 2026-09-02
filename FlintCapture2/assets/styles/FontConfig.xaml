@@ -1,0 +1,19 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Define custom font as a dynamic resource -->
+    <FontFamily x:Key="ExoBold">pack://application:,,,/FlintCapture2;component/assets/fonts/Exo/#Exo 2.0 Bold</FontFamily>
+    <FontFamily x:Key="ExoItalic">pack://application:,,,/FlintCapture2;component/assets/fonts/Exo/#Exo 2.0 Italic</FontFamily>
+    <FontFamily x:Key="ExoBoldItalic">pack://application:,,,/FlintCapture2;component/assets/fonts/Exo/#Exo 2.0 Bold Italic</FontFamily>
+    <FontFamily x:Key="ExoRegular">pack://application:,,,/FlintCapture2;component/assets/fonts/Exo/#Exo 2.0 Regular</FontFamily>
+
+    <!-- Set default font family to Exo -->
+    <Style TargetType="TextElement">
+        <Setter Property="FontFamily" Value="{StaticResource ExoRegular}"/>
+    </Style>
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource ExoRegular}"/>
+    </Style>
+
+</ResourceDictionary>
