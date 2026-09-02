@@ -19,7 +19,7 @@ namespace FlintCapture2
     /// </summary>
     public partial class App : Application
     {
-        public static bool EnableContextIconMenuBehavior = false; // remove this later once ctx menu is finished
+        public static bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
         public IndicatorWindow? indicatorWin;
