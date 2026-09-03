@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using NOTIFYICONDATA = FlintCapture2.Scripts.SystemTrayHandler.NOTIFYICONDATA;
 
 namespace FlintCapture2
@@ -19,6 +20,7 @@ namespace FlintCapture2
     /// </summary>
     public partial class App : Application
     {
+
         public static bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
@@ -28,21 +30,47 @@ namespace FlintCapture2
         public bool WasSnippingToolEnabledBefore = false;
         protected override void OnStartup(StartupEventArgs e)
         {
-            SelectedCaptureType = ScreenshotHandler.HandlerType.SelfCapture;
-            appUpdater = new();
-            indicatorWin = new();
-
-            if (!ExtraUtils.IsAddedToStartMenu()) ExtraUtils.AddToStartMenu();
-
-            if (HelperMethods.PrtScBindedToSnippingTool())
+            try
             {
-                WasSnippingToolEnabledBefore = true;
-                initDbox = new(DialogBoxWindow.DialogType.SnippingToolTempDisabledDisclaimer);
-                initDbox.Show();
+                //throw new Exception("An exception object was created and thrown in OnStartup(StartupEventArgs e)", new Exception("Startup was blocked by this line of code."));
+
+                SelectedCaptureType = ScreenshotHandler.HandlerType.SelfCapture;
+                appUpdater = new();
+                indicatorWin = new();
+
+                if (!ExtraUtils.IsAddedToStartMenu()) ExtraUtils.AddToStartMenu();
+
+                if (HelperMethods.PrtScBindedToSnippingTool())
+                {
+                    WasSnippingToolEnabledBefore = true;
+                    initDbox = new(DialogBoxWindow.DialogType.SnippingToolTempDisabledDisclaimer);
+                    initDbox.Show();
+                }
+                else
+                {
+                    DBoxFlagContinueMainWindow();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                DBoxFlagContinueMainWindow();
+                
+                if (false)
+                {
+                    string errBody = $"There was an exception:\n\n{ex.Message}";
+                    if (ex.InnerException != null) errBody += $"\n\nInner exception states:\n{ex.InnerException.Message}";
+
+                    errBody += "\n\nDo you want to copy this error? (It may help in troubleshooting...or make a report on the GitHub repo lol)";
+
+                    // replace this with a new custom dbox switch case eventually instead of using MessageBox
+                    MessageBoxResult msgbox = MessageBox.Show(errBody, "FlintCapture failed to start up...", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                    if (msgbox == MessageBoxResult.Yes) Clipboard.SetText(errBody);
+                }
+
+                DialogBoxWindow dbox = new(DialogBoxWindow.DialogType.AppFailedToStart)
+                {
+                    Argument0_Ex_AppFailedToStart = ex
+                };
+                dbox.Show();
             }
 
         }
@@ -58,6 +86,7 @@ namespace FlintCapture2
             mainWin.Show();
             indicatorWin?.ShowIndicator();
             _ = CheckUpdatesAsyncDeferred(); // todo: look into why this makes the mouse stutter. update: making it an awaited task is good practice but its just making a new dbox that lags it
+            // ^ possible solution: reserve an updater dbox object and just call .Show() on it when an update is available
         }
         
 
