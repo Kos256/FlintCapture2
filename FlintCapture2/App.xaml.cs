@@ -53,8 +53,9 @@ namespace FlintCapture2
             }
             catch (Exception ex)
             {
-                
-                if (false)
+                bool legacyError = false;
+
+                if (legacyError)
                 {
                     string errBody = $"There was an exception:\n\n{ex.Message}";
                     if (ex.InnerException != null) errBody += $"\n\nInner exception states:\n{ex.InnerException.Message}";
