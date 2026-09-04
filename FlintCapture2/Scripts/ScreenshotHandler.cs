@@ -107,8 +107,13 @@ namespace FlintCapture2.Scripts
                     else if (up) _shiftDown = false;
                 }
 
-                if (vk == VK_S && down)
+                if (vk == VK_S && _winDown && _shiftDown && down)
                 {
+                    down = false;
+                    up = false;
+                    _winDown = false;
+                    _shiftDown = false;
+
                     mainWin.Dispatcher.BeginInvoke(new Action(SelfCaptureOnHotkey));
                     return (IntPtr)1;
                 }
