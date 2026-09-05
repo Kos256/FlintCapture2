@@ -10,7 +10,15 @@
         Title="FlintCapture" Width="550" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" FontFamily="{DynamicResource ExoRegular}" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" Topmost="True" Foreground="White" FontSize="18">
 
     <Grid x:Name="RootGrid" Width="450" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Border x:Name="dboxBorder" BorderBrush="#FF0089FF" BorderThickness="1" Background="#D8002C53" d:IsLocked="True"/>
+        <Border x:Name="dboxBorder" BorderBrush="#FF0089FF" BorderThickness="1">
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#D8002C53"/>
+                    <GradientStop Color="#D8002C53" Offset="1"/>
+                    <GradientStop Color="#D8001D37" Offset="0.508"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
         <TextBlock x:Name="dboxTitle" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="FlintCapture" VerticalAlignment="Top" FontSize="24" Foreground="#FF00B0FF" Width="390"/>
         <Button x:Name="closeBtn" Style="{StaticResource IconButtonStylePrimary}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0" Width="30" FontSize="10" Height="{Binding Width, RelativeSource={RelativeSource Self}}">
             <svgc:SvgViewbox MessageText="Exit FlintCapture" Source="pack://application:,,,/FlintCapture2;component/assets/icons/window controls/close white.svg" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Width="15"/>
@@ -23,9 +31,21 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="dboxBtnPrimary" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF00435D"/>
+                        <GradientStop Color="#FF006B95" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
                 <TextBlock FlowDirection="LeftToRight"><Run Text="Primary"/></TextBlock>
             </Button>
             <Button x:Name="dboxBtnSecondary" Style="{StaticResource DefaultButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1" Margin="0,0,10,0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF00435D" Offset="0"/>
+                        <GradientStop Color="#FF006B95" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
                 <TextBlock FlowDirection="LeftToRight"><Run Text="Secondary"/></TextBlock>
             </Button>
         </Grid>

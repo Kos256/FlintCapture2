@@ -27,24 +27,40 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="assets\icons\app update.svg" />
+    <None Remove="assets\icons\startup fail.svg" />
     <None Remove="assets\sounds\app close force.wav" />
     <None Remove="assets\sounds\app close.wav" />
     <None Remove="assets\sounds\app open.wav" />
+    <None Remove="assets\sounds\app open.wav.asd" />
+    <None Remove="assets\sounds\crop end alt.wav.asd" />
+    <None Remove="assets\sounds\crop end clamp.wav.asd" />
+    <None Remove="assets\sounds\crop end.wav.asd" />
+    <None Remove="assets\sounds\crop start.wav.asd" />
     <None Remove="assets\sounds\dbox in alt.wav" />
     <None Remove="assets\sounds\dbox in empty.wav" />
+    <None Remove="assets\sounds\dbox in.wav.asd" />
     <None Remove="assets\sounds\dbox no alt.wav" />
     <None Remove="assets\sounds\dbox no.wav" />
+    <None Remove="assets\sounds\Desktop.ini" />
+    <None Remove="assets\sounds\dismiss legacy.wav" />
     <None Remove="assets\sounds\dismiss single.wav" />
+    <None Remove="assets\sounds\dismiss.wav.asd" />
     <None Remove="assets\sounds\editor exception.wav" />
+    <None Remove="assets\sounds\editor open.wav.asd" />
     <None Remove="assets\sounds\ocr fail.wav" />
     <None Remove="assets\sounds\ocr start.wav" />
+    <None Remove="assets\sounds\ocr start.wav.asd" />
     <None Remove="assets\sounds\ocr success.wav" />
+    <None Remove="assets\sounds\ocr success.wav.asd" />
     <None Remove="assets\sounds\screenshot disabled.wav" />
+    <None Remove="assets\sounds\screenshot.wav.asd" />
+    <None Remove="assets\sounds\update celebration.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="assets\icons\app update.svg" />
     <Resource Include="assets\icons\snipping tool reject.svg" />
+    <Resource Include="assets\icons\startup fail.svg" />
     <Resource Include="assets\icons\warn.svg" />
     <Resource Include="assets\icons\window controls\close white.svg" />
     <EmbeddedResource Include="assets\sounds\app close force.wav" />
@@ -64,8 +80,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="assets\sounds\dismiss all.wav" />
+    <EmbeddedResource Include="assets\sounds\dismiss legacy.wav" />
     <EmbeddedResource Include="assets\sounds\dismiss single.wav" />
-    <EmbeddedResource Include="assets\sounds\dismiss.wav" />
     <EmbeddedResource Include="assets\sounds\editor close.wav" />
     <EmbeddedResource Include="assets\sounds\editor exception.wav" />
     <EmbeddedResource Include="assets\sounds\editor open.wav" />
@@ -75,6 +91,7 @@
     <EmbeddedResource Include="assets\sounds\ocr success.wav" />
     <EmbeddedResource Include="assets\sounds\screenshot disabled.wav" />
     <EmbeddedResource Include="assets\sounds\screenshot.wav" />
+    <EmbeddedResource Include="assets\sounds\update celebration.wav" />
   </ItemGroup>
 
   <ItemGroup>

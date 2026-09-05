@@ -139,10 +139,10 @@ namespace FlintCapture2
             {
                 switch ((uint)lParam)
                 {
-                    //case NativeSystemMethods.WM_RBUTTONDOWN:
-                    //    if (App.EnableContextIconMenuBehavior) SystemTray?.ShowContextMenu(); // leftoff: SHOW CONTEXT MENU
-                    //    handled = true;
-                    //    break;
+                    case NativeSystemMethods.WM_RBUTTONDOWN:
+                        if (App.EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater) SystemTray?.ShowContextMenu(); // leftoff: SHOW CONTEXT MENU
+                        handled = true;
+                        break;
 
                     //case NativeMethods.WM_LBUTTONDBLCLK:
                     case NativeSystemMethods.WM_LBUTTONDOWN:
@@ -172,6 +172,7 @@ namespace FlintCapture2
             GMouseHook = new();
             SystemTray = new(this);
             SystemTray.SetupTrayIcon();
+            SSHandler.InitalizeTriggerHotkey();
 
             if (SelectedCaptureType == ScreenshotHandler.HandlerType.SelfCapture)
             {

@@ -34,3 +34,9 @@ allow cropping handles to be controlled by keyboard. use Q to switch between bot
 add open program on system startup
 
 "snipping today is broken, but with FlintCapture...blah blah blah"
+
+
+
+8 crop handles instead of 2 in the img editor window
+
+resizeable image editor window handles
