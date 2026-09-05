@@ -123,8 +123,15 @@ namespace FlintCapture2
                         bodyMsg.Inlines.Add(new Run(Argument0_Ex_AppFailedToStart?.InnerException.Message) { Foreground = Brushes.Orange, FontSize = 12, FontFamily = new("Consolas") });
                     }
 
-                    // make a "app failed to open" icon
-                    //dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "app open failure.svg"));
+                    try
+                    {
+                        dboxIcon.Source = new Uri(Path.Combine(PROJCONSTANTS.PackLocationFormat, "assets", "icons", "startup fail.svg"));
+
+                    }
+                    catch
+                    {
+                        MessageBox.Show("icon not found");
+                    }
 
                     closeBtn.Click += dboxClose_Generic;
                     dboxBtnPrimary.Click += dboxClose_Generic;
