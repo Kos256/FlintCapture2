@@ -1,56 +1,125 @@
-﻿using SharpVectors.Dom.Svg;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static FlintCapture2.Scripts.ScreenshotHandler;
 
 namespace FlintCapture2.Scripts
 {
     public class ScreenshotHandler
     {
-        #region win32 imports
-        private const int HOTKEY_ID = 9000; // PrtSc
-        private const int WM_HOTKEY = 0x0312;
+        #region win32 imports — low-level keyboard hook (WH_KEYBOARD_LL)
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool RegisterHotKey(
-            IntPtr hWnd,
-            int id,
-            uint fsModifiers,
-            uint vk);
-
-        [DllImport("user32.dll")]
-        private static extern bool UnregisterHotKey(
-            IntPtr hWnd,
-            int id);
-
-        private IntPtr HwndHook(
-            IntPtr hwnd,
-            int msg,
+        private delegate IntPtr LowLevelKeyboardProc(
+            int nCode,
             IntPtr wParam,
-            IntPtr lParam,
-            ref bool handled
-        )
-        {
-            if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID)
-            {
-                handled = true;
-                SelfCaptureOnHotkey();
-            }
+            IntPtr lParam);
 
-            return IntPtr.Zero;
+        [StructLayout(LayoutKind.Sequential)]
+        private struct KBDLLHOOKSTRUCT
+        {
+            public uint vkCode;
+            public uint scanCode;
+            public uint flags;
+            public uint time;
+            public IntPtr dwExtraInfo;
         }
 
-        [DllImport("gdi32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(
+            int idHook,
+            LowLevelKeyboardProc lpfn,
+            IntPtr hMod,
+            uint dwThreadId);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(
+            IntPtr hhk,
+            int nCode,
+            IntPtr wParam,
+            IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool UnhookWindowsHookEx(
+            IntPtr hhk);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetModuleHandle(
+            string lpModuleName);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool DeleteObject(IntPtr hObject);
+
+        private const int WH_KEYBOARD_LL = 13;
+
+        private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
+        private const int WM_SYSKEYDOWN = 0x0104;
+        private const int WM_SYSKEYUP = 0x0105;
+
+        private const uint VK_SNAPSHOT = 0x2C;
+        private const uint VK_LWIN = 0x5B;
+        private const uint VK_RWIN = 0x5C;
+        private const uint VK_SHIFT = 0x10;
+        private const uint VK_LSHIFT = 0xA0;
+        private const uint VK_RSHIFT = 0xA1;
+        private const uint VK_S = 0x53;
+
+        private LowLevelKeyboardProc _hookProc;
+        private IntPtr _hookHandle = IntPtr.Zero;
+
+        private bool _winDown = false;
+        private bool _shiftDown = false;
+        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0)
+            {
+                var kb = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
+                uint vk = kb.vkCode;
+                int msg = wParam.ToInt32();
+
+                bool down = msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN;
+                bool up = msg == WM_KEYUP || msg == WM_SYSKEYUP;
+
+                // Track PrtSc
+                if (vk == VK_SNAPSHOT)
+                {
+                    if (down)
+                        mainWin.Dispatcher.BeginInvoke(new Action(SelfCaptureOnHotkey));
+
+                    // Non-zero return to swallow the key entirely
+                    return (IntPtr)1;
+                }
+
+                // Track WIN + SHIFT + S
+                if (vk == VK_LWIN || vk == VK_RWIN)
+                {
+                    if (down) _winDown = true;
+                    else if (up) _winDown = false;
+                }
+                if (vk == VK_SHIFT || vk == VK_LSHIFT || vk == VK_RSHIFT)
+                {
+                    if (down) _shiftDown = true;
+                    else if (up) _shiftDown = false;
+                }
+
+                if (vk == VK_S && _winDown && _shiftDown && down)
+                {
+                    down = false;
+                    up = false;
+                    _winDown = false;
+                    _shiftDown = false;
+
+                    mainWin.Dispatcher.BeginInvoke(new Action(SelfCaptureOnHotkey));
+                    return (IntPtr)1;
+                }
+            }
+            return CallNextHookEx(_hookHandle, nCode, wParam, lParam);
+        }
 
         #endregion
 
@@ -83,42 +152,42 @@ namespace FlintCapture2.Scripts
             switch (SelectedHandlerType)
             {
                 case HandlerType.WindowsClipboard:
-                    CompositionTarget.Rendering += mainWin.OnFramePrtSc; // this one is the yucky legacy one so uhh do not assign this, it's replaced with PInvoke RegisterHotkey()
+                    CompositionTarget.Rendering += mainWin.OnFramePrtSc; // this one is the yucky legacy one so uhh do not assign this, it's replaced with the keyboard hook below
                     break;
 
                 case HandlerType.SelfCapture:
 
-                    // RegisterHotkey() is already triggered in MainWindow if HandlerType is SelfCapture
+                    // RegisterTriggerKey() is already triggered in MainWindow if HandlerType is SelfCapture
                     break;
             }
         }
 
         public bool HotkeyRegistered = false;
-        private HwndSource hotkeySource;
-        public void InitalizeTriggerHotkey()
-        {
-            var helper = new WindowInteropHelper(mainWin);
-            hotkeySource = HwndSource.FromHwnd(helper.Handle);
-            hotkeySource.AddHook(HwndHook);
-        }
         public void RegisterTriggerKey()
         {
             if (HotkeyRegistered) return;
 
-            var helper = new WindowInteropHelper(mainWin);
+            // Reset modifier tracking on reinstall so a stray Win/Shift event missed 
+            // before the hook existed can't leave us thinking a modifier is stuck down or something.
+            _winDown = false;
+            _shiftDown = false;
+            _hookProc = HookCallback;
 
-            bool success = RegisterHotKey(helper.Handle, HOTKEY_ID, 0, 0x2C);
-            if (!success) {
+            using (var process = Process.GetCurrentProcess())
+            using (var module = process.MainModule)
+            {
+                _hookHandle = SetWindowsHookEx(
+                    WH_KEYBOARD_LL,
+                    _hookProc,
+                    GetModuleHandle(module.ModuleName),
+                    0);
+            }
+
+            if (_hookHandle == IntPtr.Zero)
+            {
                 int error = Marshal.GetLastWin32Error();
-                string reason = "";
-                switch (error)
-                {
-                    case 1409:
-                        reason = "The hotkey is already registered by another app.";
-                        break;
-                }
-                if (reason != "") reason = $"\n({reason})";
-                throw new Exception($"Failed to register PrtSc HKey. Win32 Error: {error}" + reason);
+                _hookProc = null;
+                throw new Exception($"Failed to install low-level keyboard hook for PrtSc. Win32 Error: {error}");
             }
             HotkeyRegistered = true;
         }
@@ -126,14 +195,19 @@ namespace FlintCapture2.Scripts
         {
             if (!HotkeyRegistered) return;
 
-            var helper = new WindowInteropHelper(mainWin);
-            UnregisterHotKey(helper.Handle, HOTKEY_ID);
+            if (_hookHandle != IntPtr.Zero)
+            {
+                UnhookWindowsHookEx(_hookHandle);
+                _hookHandle = IntPtr.Zero;
+            }
+            _hookProc = null;
 
+            HotkeyRegistered = false;
         }
 
-        private async void SelfCaptureOnHotkey()
+        private void SelfCaptureOnHotkey()
         {
-            await HandlePrtScAsync();
+            _ = HandlePrtScAsync();
         }
 
         public List<NotificationWindow> notificationWindowQueue = new();
