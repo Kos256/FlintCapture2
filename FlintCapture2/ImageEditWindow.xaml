@@ -57,6 +57,22 @@
                             <Rectangle Fill="#7F00B7FF" Grid.Row="3" Grid.ColumnSpan="5"/>
                         </Grid>
                         <Border BorderBrush="#FF00B8FD" BorderThickness="4,4,0,0" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-5,-5,0,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="0,4,0,0" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-5,0,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="0,4,4,0" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-5,-5,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="4,0,0,0" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-5,0,0,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="2,2,2,2" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="45"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                        </Border>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="0,0,4,0" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-5,0"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="4,0,0,4" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-5,0,0,-5"/>
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="0,0,0,4" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,-5"/>
                         <Border BorderBrush="#FF00B8FD" BorderThickness="0,0,4,4" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-5,-5"/>
                     </Grid>
                 </Border>
