@@ -151,7 +151,7 @@ namespace FlintCapture2
         {
             _dismissed = true;
             PlayNotifyAnim(false);
-            ESP.PlaySound("dismiss");
+            ESP.PlaySound("dismiss single");
         }
         private bool alreadyHovered = false;
         private void NotificationHovered(object sender, MouseEventArgs e)
