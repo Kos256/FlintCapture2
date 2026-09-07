@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using NOTIFYICONDATA = FlintCapture2.Scripts.SystemTrayHandler.NOTIFYICONDATA;
+using SDM = FlintCapture2.Scripts.SaveDataManagement;
 
 namespace FlintCapture2
 {
@@ -22,6 +23,7 @@ namespace FlintCapture2
     {
 
         public static bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
+        public static (SDM.DataLayouts.UserPrimaryData Main, SDM.DataLayouts.UserPrimaryData NameThisSomethinngElseLater) UserData;
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
         public IndicatorWindow? indicatorWin;
@@ -75,10 +77,22 @@ namespace FlintCapture2
             }
 
         }
-        protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
-        {
-            base.OnSessionEnding(e);
 
+
+        protected override void OnSessionEnding(SessionEndingCancelEventArgs e) // windows is shutting down or restarting
+        {
+
+
+            base.OnSessionEnding(e);
+        }
+        protected override void OnExit(ExitEventArgs e) // app is shutting down
+        {
+            mainWin!.AppSessionRuntime.Stop();
+            UserData.Main.HoursRan = mainWin.AppSessionRuntime.Elapsed.TotalHours;
+            if (UserData.Main.LongestHoursRan < UserData.Main.HoursRan) UserData.Main.LongestHoursRan = UserData.Main.HoursRan;
+            SDM.Save(UserData.Main, "userdata.json");
+
+            base.OnExit(e);
         }
 
         public void DBoxFlagContinueMainWindow()
