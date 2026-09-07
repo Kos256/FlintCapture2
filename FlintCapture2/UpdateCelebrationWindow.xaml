@@ -1,0 +1,22 @@
+﻿<Window x:Class="FlintCapture2.UpdateCelebrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlintCapture2"
+        mc:Ignorable="d"
+        Title="UpdateCelebrationWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="White" Topmost="True" FontSize="18" Left="0" Top="0">
+    <Grid x:Name="RootGrid">
+        <Border x:Name="bgRect" Background="#7F000000"/>
+        <Canvas x:Name="particleCanvas"/>
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Welcome to the new FlintCapture update!!" VerticalAlignment="Center" FontSize="36">
+            <TextBlock.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF0059FF"/>
+                    <GradientStop Color="#FF00C8FF" Offset="0.721"/>
+                </LinearGradientBrush>
+            </TextBlock.Foreground>
+        </TextBlock>
+
+    </Grid>
+</Window>
