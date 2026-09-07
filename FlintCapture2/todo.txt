@@ -16,9 +16,9 @@ add the ability to change the main folder from AppData/Local/FlintCapture/ to an
 - attempt to transfer whatever it can into the new folder
 - skip and let the user transfer themselves manually
 
-make the crop box draggable from the middle to move the entire selection
+[ALREADY DONE] make the crop box draggable from the middle to move the entire selection
 
-add feedback (a small notification) that tells user that flint capture is running
+[ALREADY DONE] add feedback (a small notification) that tells user that flint capture is running
 
 change in NotificationWindow intro animation:
 - don't animate Left property of window
@@ -30,13 +30,18 @@ popup, "if you don't want pressure sensitivity affecting your annotations, you c
 make a timer function that snaps the screenshot after a few seconds
 
 allow cropping handles to be controlled by keyboard. use Q to switch between bottom right and top left corners, and use the arrow keys to control the direction of the handles by 10px and shift to make it more precise and fine (1px) and ctrl to make it coarse adjustments (100px)
+^ in the future, allow keyboard hotkeys and shortcuts to control entire app from just keyboard
 
 add open program on system startup
 
+funny way to start an ad for this (ripped off from clickup):
 "snipping today is broken, but with FlintCapture...blah blah blah"
 
 
-
 8 crop handles instead of 2 in the img editor window
+- add some UX behavior or a toggle for this where the user can choose between clamping the minimum of a handle when bounding box gets below 10x10 or it can push the entire box with it
+- name this behavior: "soft clamping" and "hard clamping" or maybe "cropsize clamp" and "no cropsize clamp"
 
 resizeable image editor window handles
+
+3D image preview window external overlay maybe
