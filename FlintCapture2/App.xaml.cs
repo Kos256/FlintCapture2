@@ -88,8 +88,8 @@ namespace FlintCapture2
         protected override void OnExit(ExitEventArgs e) // app is shutting down
         {
             mainWin!.AppSessionRuntime.Stop();
-            UserData.Main.HoursRan = mainWin.AppSessionRuntime.Elapsed.TotalHours;
-            if (UserData.Main.LongestHoursRan < UserData.Main.HoursRan) UserData.Main.LongestHoursRan = UserData.Main.HoursRan;
+            UserData.Main.HoursRan = mainWin.AppSessionRuntime.Elapsed;
+            if (UserData.Main.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.Main.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
             SDM.Save(UserData.Main, "userdata.json");
 
             base.OnExit(e);
