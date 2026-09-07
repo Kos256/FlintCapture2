@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SDM = FlintCapture2.Scripts.SaveDataManagement;
 using NOTIFYICONDATA = FlintCapture2.Scripts.SystemTrayHandler.NOTIFYICONDATA;
 using PathIO = System.IO.Path;
 using Point = System.Windows.Point;
@@ -26,12 +27,13 @@ namespace FlintCapture2
     public partial class MainWindow : Window
     {
         //private string _tempPath = PathIO.GetTempPath(); // check if any other stuff from FlintCapture1 relies on this before removing
-        private string FlintCaptureDataPath;
+        public string FlintCaptureDataPath;
         public ScreenshotHandler.HandlerType SelectedCaptureType = ScreenshotHandler.HandlerType.Unknown;
 
         // windows:
         public MainAppWindow _appGuiWindow;
         public SystemTrayContextMenuWindow? ctxMenuWindow;
+        public UpdateCelebrationWindow updateCelebrationWindow;
 
         // scripts:
         public SystemTrayHandler? SystemTray;
@@ -42,7 +44,8 @@ namespace FlintCapture2
         public GlobalMouseHook GMouseHook;
 
         private List<CancellationTokenSource> cancelTokenSources;
-        private Stopwatch globalStopwatch;
+        public Stopwatch AppSessionRuntime; // use this to accumulate hours of app running
+        public bool FirstTimeLaunch = false;
 
         /*
         It should have a control panel window too :) (Toggle between wait for 3m of inactivity and background process)
@@ -50,8 +53,9 @@ namespace FlintCapture2
         another idea: it should have a thing in settings where it glows if you have less than 1GB of disk space. 
         - "Running out of storage? You can move the Temp folder to another drive on the system"
         - "Make sure this drive isn't removable! Otherwise FlintCapture could break."
-        - "If it is a removable drive, make sure not to plug or unplug that drive after opening or before closing FlintCapture"
+        - "If it is a removable drive, make sure not to plug or unplug that drive respectively after opening or before closing FlintCapture"
         */
+
 
         public MainWindow(ScreenshotHandler.HandlerType SelectedCaptureType)
         {
@@ -66,8 +70,8 @@ namespace FlintCapture2
 
             Loaded += MainWindow_Loaded;
 
-            globalStopwatch = new();
-            globalStopwatch.Start();
+            AppSessionRuntime = new();
+            AppSessionRuntime.Start();
 
             this.SelectedCaptureType = SelectedCaptureType;
 
@@ -81,6 +85,41 @@ namespace FlintCapture2
                 SelectedCaptureType,
                 this
             );
+
+            try
+            {
+                SDM.Initialize(FlintCaptureDataPath);
+                if (!SDM.Exists("userdata.json"))
+                {
+                    App.UserData.Main = new SDM.DataLayouts.UserPrimaryData
+                    {
+                        LastVersionRan = PROJCONSTANTS.AppVersion,
+                        LaunchCount = 0,
+                    };
+
+                    SDM.Save(App.UserData.Main, "userdata.json");
+
+                }
+                else
+                {
+                    App.UserData.Main = SDM.Load<SDM.DataLayouts.UserPrimaryData>("userdata.json")!;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Failed to load user data :(", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            App.UserData.Main.LaunchCount++;
+            if (App.UserData.Main.LastVersionRan == null) App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
+            if (App.UserData.Main.IsFirstTime)
+            {
+                FirstTimeLaunch = true;
+                App.UserData.Main.IsFirstTime = false;
+            }
+
+            SDM.Save(App.UserData.Main, "userdata.json");
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -88,6 +127,21 @@ namespace FlintCapture2
             Show();
             Debug.WriteLine("App is running in background...");
             Hide();
+
+            if (PROJCONSTANTS.AppVersion > App.UserData.Main.LastVersionRan)
+            {
+                updateCelebrationWindow = new(this, App.UserData.Main.LastVersionRan, PROJCONSTANTS.AppVersion);
+                updateCelebrationWindow.Show();
+
+                App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
+                SDM.Save(App.UserData.Main, "userdata.json");
+            }
+
+            if (PROJCONSTANTS.AppVersion != App.UserData.Main.LastVersionRan) // for example, a previous version running etc
+            {
+                App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
+                SDM.Save(App.UserData.Main, "userdata.json");
+            }
         }
 
         public void ShowSavedScreenshotsDirectoryFileExplorer(string? path)
