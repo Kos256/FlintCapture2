@@ -60,7 +60,7 @@
                         <Border BorderBrush="#FF00B8FD" BorderThickness="0,4,0,0" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-5,0,0"/>
                         <Border BorderBrush="#FF00B8FD" BorderThickness="0,4,4,0" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-5,-5,0"/>
                         <Border BorderBrush="#FF00B8FD" BorderThickness="4,0,0,0" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-5,0,0,0"/>
-                        <Border BorderBrush="#FF00B8FD" BorderThickness="2,2,2,2" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                        <Border BorderBrush="#FF00B8FD" BorderThickness="2,2,2,2" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False">
                             <Border.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
