@@ -11,6 +11,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static FlintCapture2.Scripts.ScreenshotHandler;
+using SDM = FlintCapture2.Scripts.SaveDataManagement;
 
 namespace FlintCapture2.Scripts
 {
@@ -175,6 +176,8 @@ namespace FlintCapture2.Scripts
                     }
 
                     Debug.WriteLine($"Saved to {ssImagePath}");
+                    App.UserData.MetaData.ScreenshotTriggerCount++;
+                    SDM.Save(App.UserData.MetaData, "userdata.json");
 
                     NotificationWindow notifWnd = new(mainWin, this, timestamp, ssImagePath);
                     notificationWindowQueue.Add(notifWnd);
