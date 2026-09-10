@@ -177,7 +177,7 @@ namespace FlintCapture2.Scripts
 
                     Debug.WriteLine($"Saved to {ssImagePath}");
                     App.UserData.MetaData.ScreenshotTriggerCount++;
-                    SDM.Save(App.UserData.MetaData, "userdata.json");
+                    SDM.Save(App.UserData.MetaData, "usermeta.json");
 
                     NotificationWindow notifWnd = new(mainWin, this, timestamp, ssImagePath);
                     notificationWindowQueue.Add(notifWnd);

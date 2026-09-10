@@ -89,20 +89,20 @@ namespace FlintCapture2
             try
             {
                 SDM.Initialize(FlintCaptureDataPath);
-                if (!SDM.Exists("userdata.json"))
+                if (!SDM.Exists("usermeta.json"))
                 {
-                    App.UserData.MetaData = new SDM.DataLayouts.UserPrimaryData
+                    App.UserData.MetaData = new SDM.DataLayouts.UserMetadata
                     {
                         LastVersionRan = new Version(0, 0), // v0 so that a new savedata file would mean 
                         LaunchCount = 0,
                     };
 
-                    SDM.Save(App.UserData.MetaData, "userdata.json");
+                    SDM.Save(App.UserData.MetaData, "usermeta.json");
 
                 }
                 else
                 {
-                    App.UserData.MetaData = SDM.Load<SDM.DataLayouts.UserPrimaryData>("userdata.json")!;
+                    App.UserData.MetaData = SDM.Load<SDM.DataLayouts.UserMetadata>("usermeta.json")!;
                 }
 
             }
@@ -121,7 +121,7 @@ namespace FlintCapture2
                 App.UserData.MetaData.IsFirstTime = false;
             }
 
-            SDM.Save(App.UserData.MetaData, "userdata.json");
+            SDM.Save(App.UserData.MetaData, "usermeta.json");
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -136,13 +136,13 @@ namespace FlintCapture2
                 updateCelebrationWindow.Show();
 
                 App.UserData.MetaData.LastVersionRan = PROJCONSTANTS.AppVersion;
-                SDM.Save(App.UserData.MetaData, "userdata.json");
+                SDM.Save(App.UserData.MetaData, "usermeta.json");
             }
 
             if (PROJCONSTANTS.AppVersion != App.UserData.MetaData.LastVersionRan) // for example, a previous version running etc
             {
                 App.UserData.MetaData.LastVersionRan = PROJCONSTANTS.AppVersion;
-                SDM.Save(App.UserData.MetaData, "userdata.json");
+                SDM.Save(App.UserData.MetaData, "usermeta.json");
             }
         }
 

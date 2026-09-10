@@ -23,7 +23,7 @@ namespace FlintCapture2
     {
 
         public const bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
-        public static (SDM.DataLayouts.UserMetadata MetaData, SDM.DataLayouts.UserMetadata NameThisSomethinngElseLater) UserData;
+        public static (SDM.DataLayouts.UserMetadata MetaData, SDM.DataLayouts.ScreenshotIndexingMetadata ScreenshotIndex) UserData;
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
         public IndicatorWindow? indicatorWin;
@@ -90,7 +90,7 @@ namespace FlintCapture2
             mainWin!.AppSessionRuntime.Stop();
             UserData.MetaData.HoursRan = mainWin.AppSessionRuntime.Elapsed;
             if (UserData.MetaData.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.MetaData.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
-            SDM.Save(UserData.MetaData, "userdata.json");
+            SDM.Save(UserData.MetaData, "usermeta.json");
 
             base.OnExit(e);
         }

@@ -103,6 +103,27 @@ namespace FlintCapture2.Scripts
                 public int LaunchCount { get; set; } = 0;
                 public int ScreenshotTriggerCount { get; set; } = 0;
             }
+
+            public class ScreenshotIndexingMetadata // NOT FINISHED!!!
+            {
+                public string FileAlias { get; set; } // user assigned image name
+                public string FileName { get; set; } // saved edits img
+                public string ogFileName { get; set; } // raw img
+                public string ogPath { get; set; } // full path to raw img
+                public string /*replace this with something like xml or something fitting to support rich text in the description*/ Description { get; set; }
+
+                public int EditCount { get; set; }
+                public DateTime DateTaken { get; set; }
+                public DateTime LastViewed { get; set; }
+                public (int Width, int Height) Resolution { get; set; }
+                public (int Width, int Height) ogResolution { get; set; }
+                //     ^^^^^^^^^^^^^^^^^^^^^^^
+                //     cant decide between using
+                //     System.Windows.Point or
+                //     a named tuple for this
+
+
+            }
         }
         #endregion
     }
