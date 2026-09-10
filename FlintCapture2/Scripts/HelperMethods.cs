@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using static FlintCapture2.Scripts.SystemTrayHandler;
 
 namespace FlintCapture2.Scripts
 {
@@ -76,5 +78,29 @@ namespace FlintCapture2.Scripts
 
             return (result, exceptionResult);
         }
+    }
+
+    public static class NativeSystemMethods
+    {
+        public const uint WM_TRAYICON = 0x0400 + 1; // Custom message ID for tray events
+        public const uint NIF_MESSAGE = 0x01;
+        public const uint NIF_ICON = 0x02;
+        public const uint NIF_TIP = 0x04;
+
+        public const uint WM_LBUTTONDOWN = 0x0201;
+        public const uint WM_RBUTTONDOWN = 0x0204;
+        public const uint WM_LBUTTONDBLCLK = 0x0203;
+        public const uint WM_USER = 0x0400;
+        //public const uint WM_TRAYICON = WM_USER + 1;
+
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA lpData);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern bool DestroyIcon(IntPtr handle);
+
+        public const uint NIM_ADD = 0x00000000;
+        public const uint NIM_MODIFY = 0x00000001;
+        public const uint NIM_DELETE = 0x00000002;
     }
 }
