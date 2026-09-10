@@ -22,8 +22,8 @@ namespace FlintCapture2
     public partial class App : Application
     {
 
-        public static bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
-        public static (SDM.DataLayouts.UserPrimaryData Main, SDM.DataLayouts.UserPrimaryData NameThisSomethinngElseLater) UserData;
+        public const bool EnableContextIconMenuBehavior_IDidThisForYouYogurt_THankMeLater = false; // remove this later once ctx menu is finished
+        public static (SDM.DataLayouts.UserMetadata MetaData, SDM.DataLayouts.UserMetadata NameThisSomethinngElseLater) UserData;
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
         public IndicatorWindow? indicatorWin;
@@ -88,9 +88,9 @@ namespace FlintCapture2
         protected override void OnExit(ExitEventArgs e) // app is shutting down
         {
             mainWin!.AppSessionRuntime.Stop();
-            UserData.Main.HoursRan = mainWin.AppSessionRuntime.Elapsed;
-            if (UserData.Main.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.Main.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
-            SDM.Save(UserData.Main, "userdata.json");
+            UserData.MetaData.HoursRan = mainWin.AppSessionRuntime.Elapsed;
+            if (UserData.MetaData.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.MetaData.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
+            SDM.Save(UserData.MetaData, "userdata.json");
 
             base.OnExit(e);
         }

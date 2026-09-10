@@ -84,18 +84,22 @@ namespace FlintCapture2.Scripts
         #region defined data layouts for saving
         public class DataLayouts
         {
-            public class UserPrimaryData
+            public class Legacy // legacy data layouts
             {
-                public string? SchemaVersion = null;
 
+            } 
 
+            public class UserMetadata
+            {
+                public int SchemaVersion { get; set; } = 1;
 
                 public bool IsFirstTime { get; set; } = true;
                 public Version? LastVersionRan { get; set; } = null;
 
+
                 // fun metrics:
-                public double HoursRan { get; set; } = 0;
-                public double LongestHoursRan { get; set; } = 0;
+                public TimeSpan HoursRan { get; set; } = TimeSpan.Zero;
+                public TimeSpan LongestSessionRan { get; set; } = TimeSpan.Zero;
                 public int LaunchCount { get; set; } = 0;
                 public int ScreenshotTriggerCount { get; set; } = 0;
             }
