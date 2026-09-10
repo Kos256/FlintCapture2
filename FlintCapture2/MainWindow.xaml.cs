@@ -91,18 +91,18 @@ namespace FlintCapture2
                 SDM.Initialize(FlintCaptureDataPath);
                 if (!SDM.Exists("userdata.json"))
                 {
-                    App.UserData.Main = new SDM.DataLayouts.UserPrimaryData
+                    App.UserData.MetaData = new SDM.DataLayouts.UserPrimaryData
                     {
-                        LastVersionRan = PROJCONSTANTS.AppVersion,
+                        LastVersionRan = new Version(0, 0), // v0 so that a new savedata file would mean 
                         LaunchCount = 0,
                     };
 
-                    SDM.Save(App.UserData.Main, "userdata.json");
+                    SDM.Save(App.UserData.MetaData, "userdata.json");
 
                 }
                 else
                 {
-                    App.UserData.Main = SDM.Load<SDM.DataLayouts.UserPrimaryData>("userdata.json")!;
+                    App.UserData.MetaData = SDM.Load<SDM.DataLayouts.UserPrimaryData>("userdata.json")!;
                 }
 
             }
@@ -111,15 +111,17 @@ namespace FlintCapture2
                 MessageBox.Show(ex.Message, "Failed to load user data :(", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            App.UserData.Main.LaunchCount++;
-            if (App.UserData.Main.LastVersionRan == null) App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
-            if (App.UserData.Main.IsFirstTime)
+            MessageBox.Show(App.UserData.MetaData.SchemaVersion.ToString());
+
+            App.UserData.MetaData.LaunchCount++;
+            if (App.UserData.MetaData.LastVersionRan == null) App.UserData.MetaData.LastVersionRan = PROJCONSTANTS.AppVersion;
+            if (App.UserData.MetaData.IsFirstTime)
             {
                 FirstTimeLaunch = true;
-                App.UserData.Main.IsFirstTime = false;
+                App.UserData.MetaData.IsFirstTime = false;
             }
 
-            SDM.Save(App.UserData.Main, "userdata.json");
+            SDM.Save(App.UserData.MetaData, "userdata.json");
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -128,19 +130,19 @@ namespace FlintCapture2
             Debug.WriteLine("App is running in background...");
             Hide();
 
-            if (PROJCONSTANTS.AppVersion > App.UserData.Main.LastVersionRan)
+            if (PROJCONSTANTS.AppVersion > App.UserData.MetaData.LastVersionRan)
             {
-                updateCelebrationWindow = new(this, App.UserData.Main.LastVersionRan, PROJCONSTANTS.AppVersion);
+                updateCelebrationWindow = new(this, App.UserData.MetaData.LastVersionRan, PROJCONSTANTS.AppVersion);
                 updateCelebrationWindow.Show();
 
-                App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
-                SDM.Save(App.UserData.Main, "userdata.json");
+                App.UserData.MetaData.LastVersionRan = PROJCONSTANTS.AppVersion;
+                SDM.Save(App.UserData.MetaData, "userdata.json");
             }
 
-            if (PROJCONSTANTS.AppVersion != App.UserData.Main.LastVersionRan) // for example, a previous version running etc
+            if (PROJCONSTANTS.AppVersion != App.UserData.MetaData.LastVersionRan) // for example, a previous version running etc
             {
-                App.UserData.Main.LastVersionRan = PROJCONSTANTS.AppVersion;
-                SDM.Save(App.UserData.Main, "userdata.json");
+                App.UserData.MetaData.LastVersionRan = PROJCONSTANTS.AppVersion;
+                SDM.Save(App.UserData.MetaData, "userdata.json");
             }
         }
 
