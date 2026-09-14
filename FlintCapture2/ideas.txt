@@ -43,5 +43,70 @@ funny way to start an ad for this (ripped off from clickup):
 - name this behavior: "soft clamping" and "hard clamping" or maybe "cropsize clamp" and "no cropsize clamp"
 
 resizeable image editor window handles
+(add resize colliders on window corners)
 
 3D image preview window external overlay maybe
+
+UX issue: i've noticed people often save too early while cropping
+- they click crop button
+- they forget to click done
+- they click save directly
+solutions:
+- lazy solution, disable save button when crop mode is enabled
+- better solution: add a small dbox (internal, not dbox window) that softly notifies the user or asks if you want to apply the crop before saving or not
+^ "you're still cropping! apply the crop before saving the image or save the image without cropping?" (also add a third option to cancel the save and just go baack to the UI without saving or closing (this should probably be the purpose of the x button))
+- optional feature: add a cancel button while cropping
+
+UX bug: oh would you look at that it's also related to cropping
+- if the aspect ratio changes to something largely different (lets say width became smaller)
+^ if the crop rectangle before the crop was applied was at the far edge of the image
+^ upon clicking done and then crop again, it shows the crop rect outside of the image's bounds.
+- this isn't a fatal bug, it's just a visual bug :)
+- it can be fixed by checking for bounds and moving the rect accordingly before cropping
+
+
+i should simplify the 4 drag delta functions into one using an enum with 4 modes
+(allows for adding features across all thumbs)
+
+replace the force close debug button 
+with a special winctrl button that
+does the same thing
+icon should probably be a red x with a warning icon beside it
+
+idea for debug: if developer tools are on in the settings
+allow debug controls to be shown
+and also a nicely designed debug window
+which is owned by an img editor window for each img editor window
+
+animate crop corners so upon thumb hover, it increases border thickness
+
+add a small crashflag in the usermeta.json file 
+so flintcapture can tell if it crashed or not
+(or if it was just closed abruptly)
+i might make it log exceptions mid runtime into there for actual crashes
+anyways, it sets to true upon launch and false upon exit
+if it sees that it's true upon launch before it set it to true
+itll realize it was closed without consent
+
+
+ssIndex.json structure:
+
+    "this is an example structure": "data structure concept for indexing screenshots",
+    "images": [
+        {
+            "file": "/saved edits/image.png",
+            "ogFile": "/raw/image.png",
+            "ogPath": "C:/full/path/to/raw/image.png",
+            "editCount": 34,
+            "userAlias": "The renamed displayed alias that the user gives to this file in the app",
+            "dateTaken": "DateTime.Now?"
+            "lastViewed": "DateTime.Sometime"
+            "res": "487x345",
+            "ogRes": "1920x1080",
+            "description": "probably allowing rich formatted text to be stored here" ,
+        },
+        {
+            "...": "more entries of the exact same kind from above"
+        }
+    ]
+}
