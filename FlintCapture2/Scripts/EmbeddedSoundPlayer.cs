@@ -199,7 +199,7 @@ namespace FlintCapture2.Scripts
             _outputDevice?.Dispose();
         }
 
-        private static CachedSound GetCachedSound(string name)
+        private static CachedSound GetCachedSound(string name, bool softException = true)
         {
             string resourceName = $"{PROJCONSTANTS.AssemblyName}.assets.sounds.{name}.wav";
             if (_cache.TryGetValue(resourceName, out var sound)) return sound;
@@ -208,8 +208,8 @@ namespace FlintCapture2.Scripts
             using Stream? stream = asm.GetManifestResourceStream(resourceName);
             if (stream == null)
             {
-                MessageBox.Show($"Sound resource not found:\n{resourceName}", "Audio Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw new FileNotFoundException(resourceName);
+                if (softException) MessageBox.Show($"Sound resource not found:\n{resourceName}", "Audio Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                else throw new FileNotFoundException(resourceName);
             }
 
             sound = new CachedSound(stream);
