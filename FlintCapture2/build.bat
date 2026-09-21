@@ -1,5 +1,13 @@
-echo "this will leave the build in the 'bin' directory" 
-dotnet publish FlintCapture2.csproj -c Release -r win-x64 --self-contained true
-move "bin\Release\net10.0-windows\win-x64\publish\FlintCapture2.exe" "bin\FlintCapture.exe"
+@echo off
 
+echo This will leave the build in the 'bin' directory
+
+dotnet publish FlintCapture.csproj ^
+    -c RuntimeExcluded ^
+    -r win-x64 ^
+    --self-contained false ^
+    -p:PublishDir=bin\RuntimeExcluded\
+
+move /Y "bin\RuntimeExcluded\FlintCapture.exe" "bin\[RE] FlintCapture.exe"
+rmdir /S /Q "bin\RuntimeExcluded"
 pause

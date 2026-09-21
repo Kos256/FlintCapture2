@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-	<Version>2.0.4</Version>
+    <Version>2.0.4</Version>
   </PropertyGroup>
 
   <!-- Release-Specific (Contained) Settings -->
@@ -25,36 +25,35 @@
     <DebugType>embedded</DebugType>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+
+  <!-- Release-Specific (Contained) Settings -->
+    <PropertyGroup Condition="'$(Configuration)' == 'RuntimeExcluded'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+    
+    
   <ItemGroup>
-    <None Remove="assets\icons\app update.svg" />
-    <None Remove="assets\icons\startup fail.svg" />
-    <None Remove="assets\sounds\app close force.wav" />
-    <None Remove="assets\sounds\app close.wav" />
-    <None Remove="assets\sounds\app open.wav" />
     <None Remove="assets\sounds\app open.wav.asd" />
     <None Remove="assets\sounds\crop end alt.wav.asd" />
     <None Remove="assets\sounds\crop end clamp.wav.asd" />
     <None Remove="assets\sounds\crop end.wav.asd" />
     <None Remove="assets\sounds\crop start.wav.asd" />
-    <None Remove="assets\sounds\dbox in alt.wav" />
-    <None Remove="assets\sounds\dbox in empty.wav" />
     <None Remove="assets\sounds\dbox in.wav.asd" />
-    <None Remove="assets\sounds\dbox no alt.wav" />
-    <None Remove="assets\sounds\dbox no.wav" />
     <None Remove="assets\sounds\Desktop.ini" />
-    <None Remove="assets\sounds\dismiss legacy.wav" />
-    <None Remove="assets\sounds\dismiss single.wav" />
     <None Remove="assets\sounds\dismiss.wav.asd" />
-    <None Remove="assets\sounds\editor exception.wav" />
     <None Remove="assets\sounds\editor open.wav.asd" />
-    <None Remove="assets\sounds\ocr fail.wav" />
-    <None Remove="assets\sounds\ocr start.wav" />
     <None Remove="assets\sounds\ocr start.wav.asd" />
-    <None Remove="assets\sounds\ocr success.wav" />
     <None Remove="assets\sounds\ocr success.wav.asd" />
-    <None Remove="assets\sounds\screenshot disabled.wav" />
     <None Remove="assets\sounds\screenshot.wav.asd" />
-    <None Remove="assets\sounds\update celebration.wav" />
   </ItemGroup>
 
   <ItemGroup>
