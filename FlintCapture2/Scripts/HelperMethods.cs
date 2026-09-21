@@ -94,10 +94,10 @@ namespace FlintCapture2.Scripts
         //public const uint WM_TRAYICON = WM_USER + 1;
 
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-        static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA lpData);
+        public static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA lpData);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern bool DestroyIcon(IntPtr handle);
+        public static extern bool DestroyIcon(IntPtr handle);
 
         public const uint NIM_ADD = 0x00000000;
         public const uint NIM_MODIFY = 0x00000001;
