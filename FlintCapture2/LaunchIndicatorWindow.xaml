@@ -1,4 +1,4 @@
-﻿<Window x:Class="FlintCapture2.IndicatorWindow"
+﻿<Window x:Class="FlintCapture2.LaunchIndicatorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -28,6 +28,10 @@
             </Border>
             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Running!" VerticalAlignment="Center" TextAlignment="Center" Foreground="#FF00B7FF" FontFamily="{DynamicResource ExoBold}"/>
         </Grid>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF00B7FF">
+            <TextBlock.Effect>
+                <DropShadowEffect/>
+            </TextBlock.Effect><Run Text="To-Do: rename this window to LaunchIndicatorWindow"/><LineBreak/><Run/></TextBlock>
 
     </Grid>
 </Window>

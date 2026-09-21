@@ -17,9 +17,9 @@ namespace FlintCapture2
     /// <summary>
     /// Interaction logic for IndicatorWindow.xaml
     /// </summary>
-    public partial class IndicatorWindow : Window
+    public partial class LaunchIndicatorWindow : Window
     {
-        public IndicatorWindow()
+        public LaunchIndicatorWindow()
         {
             InitializeComponent();
 
