@@ -26,7 +26,7 @@ namespace FlintCapture2
         public static (SDM.DataLayouts.UserMetadata MetaData, SDM.DataLayouts.ScreenshotIndexingMetadata ScreenshotIndex) UserData;
         public MainWindow? mainWin;
         public DialogBoxWindow? initDbox;
-        public IndicatorWindow? indicatorWin;
+        public LaunchIndicatorWindow? indicatorWin;
         public AppUpdater? appUpdater;
         public ScreenshotHandler.HandlerType SelectedCaptureType;
         public bool WasSnippingToolEnabledBefore = false;
@@ -81,16 +81,20 @@ namespace FlintCapture2
 
         protected override void OnSessionEnding(SessionEndingCancelEventArgs e) // windows is shutting down or restarting
         {
-
-
             base.OnSessionEnding(e);
         }
         protected override void OnExit(ExitEventArgs e) // app is shutting down
         {
             mainWin!.AppSessionRuntime.Stop();
-            UserData.MetaData.HoursRan += mainWin.AppSessionRuntime.Elapsed;
-            if (UserData.MetaData.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.MetaData.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
-            SDM.Save(UserData.MetaData, "usermeta.json");
+            
+            if (UserData.MetaData != null)
+            {
+                UserData.MetaData.HoursRan += mainWin.AppSessionRuntime.Elapsed;
+                if (UserData.MetaData.LongestSessionRan < mainWin.AppSessionRuntime.Elapsed) UserData.MetaData.LongestSessionRan = mainWin.AppSessionRuntime.Elapsed;
+                UserData.MetaData.ApplicationCrash = false;
+                SDM.Save(UserData.MetaData, "usermeta.json");
+            }
+            
 
             base.OnExit(e);
         }
@@ -133,11 +137,8 @@ namespace FlintCapture2
         }
         public async Task CheckUpdatesAsyncDeferred()
         {
-            // Let layout + first render frame finish
-            await Task.Yield();
-
+            await Task.Yield(); // Let layout + first render frame finish
             await Task.Delay(3000);
-
             await CheckUpdates();
         }
     }
